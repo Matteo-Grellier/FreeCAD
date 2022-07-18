@@ -126,7 +126,7 @@ bool PropertySheet::isValidAlias(const std::string &candidate)
     boost::cmatch cm;
 
     /* Check if it is used before */
-    if (getValueFromAlias(candidate) != nullptr)
+    if (getValueFromAlias(candidate))
         return false;
 
     /* Check to make sure it doesn't clash with a predefined unit */
@@ -1133,7 +1133,7 @@ void PropertySheet::addDependencies(CellAddress key)
 
     const Expression * expression = cell->getExpression();
 
-    if (expression == nullptr)
+    if (!expression)
         return;
 
     for(auto &var : expression->getIdentifiers()) {
