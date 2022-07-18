@@ -27,5 +27,33 @@
 #include <Standard_Version.hxx>
 #include <TopoDS.hxx>
 #include <gp_Pnt.hxx>
+#include <Base/Vector3D.h>
 #endif
 #include "BlendPoint.h"
+
+
+using namespace Surface;
+
+class blendPoint
+{
+public:
+    std::vector<Base::Vector3d> vectorList;
+
+	blendPoint();
+	~blendPoint();
+	
+	void multiply()
+	{
+
+	}
+
+private:
+};
+
+blendPoint::blendPoint()
+{
+}
+
+blendPoint::~blendPoint()
+{
+}

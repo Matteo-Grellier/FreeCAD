@@ -298,8 +298,8 @@ void CmdBlendCurve::activated(int)
     }
     openCommand(QT_TRANSLATE_NOOP("Command", "Blend Curve"));
     doCommand(Doc, "App.ActiveDocument.addObject(\"Surface::BlendCurve\",\"%s\")", featName.c_str());
-    doCommand(Doc, "App.ActiveDocument.%s.StartEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[0], edge[0].c_str());
-    doCommand(Doc, "App.ActiveDocument.%s.EndEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[1], edge[1].c_str());
+    doCommand(Doc, "App.ActiveDocument.%s.StartEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[0].c_str(), edge[0].c_str());
+    doCommand(Doc, "App.ActiveDocument.%s.EndEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[1].c_str(), edge[1].c_str());
     updateActive();
     commitCommand();
 }
