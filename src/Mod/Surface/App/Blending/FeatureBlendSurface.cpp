@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2014 Nathan Miller <Nathan.A.Mill[at]gmail.com>         *
- *   Copyright (c) 2014 Balázs Bámer                                       *
+ *   Copyright (c) 2022 Matteo Grellier <matteogrellier@gmail.com>         *
+ *                                                                         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -21,68 +21,20 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-
 #ifndef _PreComp_
+#include <Precision.hxx>
+#include <Standard_Version.hxx>
+#include <TopoDS.hxx>
+#include <gp_Pnt.hxx>
 #endif
+#include "FeatureBlendSurface.h"
 
-#include "Workbench.h"
-#include <Gui/MenuManager.h>
-#include <Gui/ToolBarManager.h>
+using namespace Surface;
 
-using namespace SurfaceGui;
+PROPERTY_SOURCE(Surface::FeatureBlendSurface, Part::Feature)
 
-/// @namespace SurfaceGui @class Workbench
-TYPESYSTEM_SOURCE(SurfaceGui::Workbench, Gui::StdWorkbench)
-
-Workbench::Workbench()
+App::DocumentObjectExecReturn *FeatureBlendSurface::execute(void)
 {
-}
-
-Workbench::~Workbench()
-{
-}
-
-Gui::MenuItem* Workbench::setupMenuBar() const
-{
-    Gui::MenuItem* root = StdWorkbench::setupMenuBar();
-    Gui::MenuItem* item = root->findItem( "&Windows" );
-
-    Gui::MenuItem* surface = new Gui::MenuItem;
-    root->insertItem( item, surface );
-    surface->setCommand("Surface");
-    *surface << "Surface_Filling"
-             << "Surface_GeomFillSurface"
-             << "Surface_Sections"
-             << "Surface_ExtendFace"
-             << "Surface_CurveOnMesh"
-             << "BlendCurve"
-             << "BlendSurface";
-
-/*
-    *surface << "Surface_Cut";
-*/
-
-    return root;
-}
-
-Gui::ToolBarItem* Workbench::setupToolBars() const
-{
-    Gui::ToolBarItem* root = StdWorkbench::setupToolBars();
-
-    Gui::ToolBarItem* surface = new Gui::ToolBarItem(root);
-    surface->setCommand("Surface");
-    *surface << "Surface_Filling"
-             << "Surface_GeomFillSurface"
-             << "Surface_Sections"
-             << "Surface_ExtendFace"
-             << "Surface_CurveOnMesh"
-             << "BlendCurve"
-             << "BlendSurface";
-        /*
-    *surface << "Surface_Cut";
-*/
-
-    return root;
+    return new App::DocumentObjectExecReturn("Doesn't Work");
 }
