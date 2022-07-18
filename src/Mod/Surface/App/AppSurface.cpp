@@ -63,7 +63,6 @@ PyObject *initModule()
 
 }// namespace Surface
 
-
 /* Python entry */
 PyMOD_INIT_FUNC(Surface)
 {
@@ -79,22 +78,9 @@ PyMOD_INIT_FUNC(Surface)
 
     PyObject *mod = Surface::initModule();
     Base::Console().Log("Loading Surface module... done\n");
-    //PyObject *surfaceModule = Surface::initModule();
-    //Base::Console().Log("Loading Part module... done\n");
-
-    //Py::Object module(surfaceModule);
-	
-    //try {
-    //    Base::Interpreter().runString("import Surface");
-    //}
-    //catch(const Base::Exception& e) {
-    //    PyErr_SetString(PyExc_ImportError, e.what());
-    //    PyMOD_Return(nullptr);
-    //}
-	
     Base::Interpreter().addType(&Surface::BlendPointPy::Type, mod, "BlendPoint");
     Base::Interpreter().addType(&Surface::BlendCurvePy::Type, mod, "BlendCurve");
-    //// Add types to module
+    // Add types to module
     Surface::Filling         ::init();
     Surface::Sewing          ::init();
     Surface::Cut             ::init();
