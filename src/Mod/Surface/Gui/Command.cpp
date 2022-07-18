@@ -189,6 +189,8 @@ void CmdSurfaceGeomFillSurface::activated(int iMsg)
 }
 
 
+
+
 DEF_STD_CMD_A(CmdSurfaceCurveOnMesh)
 
 CmdSurfaceCurveOnMesh::CmdSurfaceCurveOnMesh()
@@ -203,6 +205,8 @@ CmdSurfaceCurveOnMesh::CmdSurfaceCurveOnMesh()
     sStatusTip    = sToolTipText;
     sPixmap       = "Surface_CurveOnMesh";
 }
+
+
 
 void CmdSurfaceCurveOnMesh::activated(int)
 {
@@ -223,6 +227,92 @@ bool CmdSurfaceCurveOnMesh::isActive(void)
 
     return false;
 }
+
+//===========================================================================
+// CmdBlendSurface THIS IS THE BLEND SURFACE COMMAND
+//===========================================================================
+DEF_STD_CMD_A(CmdBlendSurface)
+
+CmdBlendSurface::CmdBlendSurface()
+    : Command("BlendSurface")
+{
+    sAppModule = "Surface";
+    sGroup = QT_TR_NOOP("Surface");
+    sMenuText = QT_TR_NOOP("Blend Surface");
+    sToolTipText = QT_TR_NOOP("This is the blend Surface feature");
+    sStatusTip = sToolTipText;
+    sWhatsThis = "BlendSurface";
+    sPixmap = "BlendSurface";
+}
+
+void CmdBlendSurface::activated(int)
+{
+    
+}
+
+bool CmdBlendSurface::isActive(void)
+{
+    return true;
+}
+
+
+
+
+
+//===========================================================================
+// CmdBlendCurve THIS IS THE BLEND CURVE COMMAND
+//===========================================================================
+DEF_STD_CMD_A(CmdBlendCurve)
+
+CmdBlendCurve::CmdBlendCurve()
+    : Command("BlendCurve")
+{
+    sAppModule = "Surface";
+    sGroup = QT_TR_NOOP("Surface");
+    sMenuText = QT_TR_NOOP("Blend Curve");
+    sToolTipText = QT_TR_NOOP("Join two edges with high continuity");
+    sStatusTip = sToolTipText;
+    sWhatsThis = "BlendCurve";
+    sPixmap = "BlendCurve";
+}
+
+void CmdBlendCurve::activated(int)
+{
+    // To do add pickpoints to parameters
+    std::string docName = App::GetApplication().getActiveDocument()->getName();
+    std::string objName[2];
+    std::string edge[2];
+    std::string featName = getUniqueObjectName("BlendCurve");
+    std::vector<Gui::SelectionObject> sel = getSelection().getSelectionEx(0, Part::Feature::getClassTypeId());
+
+    objName[0] = sel[0].getFeatName();
+    edge[0] = sel[0].getSubNames()[0];
+
+    if (sel.size() == 1) {
+        objName[1] = sel[0].getFeatName();
+        edge[1] = sel[0].getSubNames()[1];
+    }
+    else {
+        objName[1] = sel[1].getFeatName();
+        edge[1] = sel[1].getSubNames()[0];
+    }
+    openCommand(QT_TRANSLATE_NOOP("Command", "Blend Curve"));
+    doCommand(Doc, "App.ActiveDocument.addObject(\"Surface::BlendCurve\",\"%s\")", featName.c_str());
+    doCommand(Doc, "App.ActiveDocument.%s.StartEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[0], edge[0].c_str());
+    doCommand(Doc, "App.ActiveDocument.%s.EndEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[1], edge[1].c_str());
+    updateActive();
+    commitCommand();
+}
+
+bool CmdBlendCurve::isActive(void)
+{
+    Gui::SelectionFilter edgeFilter("SELECT Part::Feature SUBELEMENT Edge COUNT 2");
+    return edgeFilter.match();
+}
+
+
+
+
 
 DEF_STD_CMD_A(CmdSurfaceExtendFace)
 
@@ -306,4 +396,6 @@ void CreateSurfaceCommands(void)
     rcCmdMgr.addCommand(new CmdSurfaceSections());
     rcCmdMgr.addCommand(new CmdSurfaceExtendFace());
     rcCmdMgr.addCommand(new CmdSurfaceCurveOnMesh());
+    rcCmdMgr.addCommand(new CmdBlendCurve());
+    rcCmdMgr.addCommand(new CmdBlendSurface());
 }

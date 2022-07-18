@@ -16,7 +16,17 @@ set(Surface_LIBS
     Part
 )
 
+SET(Blending_SRCS
+    Blending/FeatureBlendCurve.cpp
+    Blending/FeatureBlendCurve.h
+    Blending/BlendPoint.cpp
+    Blending/BlendPoint.h
+    Blending/FeatureBlendSurface.cpp
+    Blending/FeatureBlendSurface.h
+)
+
 SET(Surface_SRCS
+    ${Blending_SRCS}
     AppSurface.cpp
     PreCompiled.cpp
     PreCompiled.h

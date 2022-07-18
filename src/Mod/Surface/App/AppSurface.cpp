@@ -30,6 +30,7 @@
 #include "FeatureGeomFillSurface.h"
 #include "FeatureExtend.h"
 #include "FeatureSections.h"
+#include "Blending/FeatureBlendCurve.h"
 
 #include <Base/Interpreter.h>
 #include <Base/Parameter.h>
@@ -77,6 +78,7 @@ PyMOD_INIT_FUNC(Surface)
     Surface::Cut             ::init();
     Surface::GeomFillSurface ::init();
     Surface::Extend          ::init();
+    Surface::BlendCurve      ::init();
     Surface::Sections        ::init();
 
     PyMOD_Return(mod);
