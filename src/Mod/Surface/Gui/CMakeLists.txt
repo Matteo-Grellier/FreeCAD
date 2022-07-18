@@ -36,6 +36,13 @@ SET(SurfaceGui_UIC_SRCS
     TaskSections.ui
 )
 
+SET(BlendCurveGUI_SRCS
+    BlendCurve/ViewProviderBlendCurve.cpp
+    BlendCurve/ViewProviderBlendCurve.h
+    BlendCurve/ViewProviderBlendSurface.cpp
+    BlendCurve/ViewProviderBlendSurface.h
+)
+
 if (BUILD_QT5)
     qt5_wrap_ui(SurfaceGui_UIC_HDRS ${SurfaceGui_UIC_SRCS})
 else()
@@ -45,6 +52,7 @@ endif()
 SET(SurfaceGui_SRCS
     ${SurfaceGui_QRC_SRCS}
     ${SurfaceGui_UIC_HDRS}
+    ${BlendCurveGUI_SRCS}
     TaskFilling.cpp
     TaskFilling.h
     TaskFillingEdge.cpp

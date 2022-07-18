@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
+	<PythonExport
+		    Father="BoundedCurvePy"
+			Name="BlendCurvePy"
+			PythonName="Surface.BlendCurve"
+			Twin="GeomBezierCurve"
+			TwinPointer="GeomBezierCurve"
+			Include="Mod/Part/App/Geometry.h"
+			Namespace="Surface"
+			FatherInclude="Mod/Part/App/FeatureBlendCurve.h"
+			FatherNamespace="Part"
+			Constructor="true">
+		>
+		
+	</PythonExport>
+</GenerateModel>
