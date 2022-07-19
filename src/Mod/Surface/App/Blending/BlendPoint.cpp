@@ -40,8 +40,8 @@ BlendPoint::BlendPoint(std::vector<Base::Vector3d> vectorList)
         throw Base::ValueError("the vector List is empty");
     }
 
-    for each (Base::Vector3d vector in vectorList) {
-        vectors.push_back(vector);
+    for (int i = 0; i < vectorList.size(); i++) {
+        vectors.push_back(vectorList[i]);
     }
 }
 
