@@ -30,25 +30,24 @@
 #endif
 #include "FeatureBlendCurve.h"
 
-
 using namespace Surface;
 
-PROPERTY_SOURCE(Surface::BlendCurve, Part::Spline)
+PROPERTY_SOURCE(Surface::FeatureBlendCurve, Part::Spline)
 
-BlendCurve::BlendCurve() 
+FeatureBlendCurve::FeatureBlendCurve()
 {
     ADD_PROPERTY_TYPE(StartEdge, (nullptr), "FirstEdge", App::Prop_None, "");
-    ADD_PROPERTY_TYPE(StartParameter, (1), "FirstEdge", App::Prop_None, "");
+    ADD_PROPERTY_TYPE(StartParameter, (1.0f), "FirstEdge", App::Prop_None, "");
     ADD_PROPERTY_TYPE(StartContinuity, (1), "FirstEdge", App::Prop_None, "");
     ADD_PROPERTY_TYPE(StartSize, (1.0f), "FirstEdge", App::Prop_None, "");
 
     ADD_PROPERTY_TYPE(EndEdge, (nullptr), "SecondEdge", App::Prop_None, "");
-    ADD_PROPERTY_TYPE(EndParameter, (1), "SecondEdge", App::Prop_None, "");
+    ADD_PROPERTY_TYPE(EndParameter, (1.0f), "SecondEdge", App::Prop_None, "");
     ADD_PROPERTY_TYPE(EndContinuity, (1), "SecondEdge", App::Prop_None, "");
     ADD_PROPERTY_TYPE(EndSize, (1.0f), "SecondEdge", App::Prop_None, "");
 }
 
-App::DocumentObjectExecReturn *BlendCurve::execute(void)
+App::DocumentObjectExecReturn *FeatureBlendCurve::execute(void)
 {
     return StdReturn;
 }

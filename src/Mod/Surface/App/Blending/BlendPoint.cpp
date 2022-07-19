@@ -34,26 +34,24 @@
 
 using namespace Surface;
 
-class blendPoint
+BlendPoint::BlendPoint(std::vector<Base::Vector3d> vectorList)
 {
-public:
-    std::vector<Base::Vector3d> vectorList;
+    if (vectorList.size() == 0) {
+        throw Base::ValueError("the vector List is empty");
+    }
 
-	blendPoint();
-	~blendPoint();
-	
-	void multiply()
-	{
-
-	}
-
-private:
-};
-
-blendPoint::blendPoint()
-{
+    for (int i = 0; i < vectorList.size(); i++) {
+        vectors.push_back(vectorList[i]);
+    }
 }
 
-blendPoint::~blendPoint()
-{
+void BlendPoint::multiply(double f) {
+    for (size_t i = 0; i < vectors.size(); i++) {
+        vectors[i] *= Pow(f, i);
+    }
 }
+
+
+
+
+

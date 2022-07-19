@@ -33,7 +33,7 @@
 #include "TaskFilling.h"
 #include "TaskSections.h"
 #include "ViewProviderExtend.h"
-#include "BlendCurve/ViewProviderBlendCurve.h"
+#include "Blending/ViewProviderBlendCurve.h"
 
 
 // use a different name to CreateCommand()
