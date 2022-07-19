@@ -78,7 +78,7 @@ PyMOD_INIT_FUNC(Surface)
     Surface::Cut             ::init();
     Surface::GeomFillSurface ::init();
     Surface::Extend          ::init();
-    Surface::BlendCurve      ::init();
+    Surface::FeatureBlendCurve ::init();
     Surface::Sections        ::init();
 
     PyMOD_Return(mod);

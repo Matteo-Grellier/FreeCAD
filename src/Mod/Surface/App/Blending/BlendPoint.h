@@ -32,13 +32,20 @@
 namespace Surface
 {
 
-class SurfaceExport BlendPoint: public Part::Feature
+
+class SurfaceExport BlendPoint
 {
-
 public:
-    //Put properties below
-};
+    std::vector<Base::Vector3d> vectors;
+    std::vector<Base::Vector3d> multipliedVectors;
 
-}//Namespace Surface
+    BlendPoint(std::vector<Base::Vector3d> vectorList);
+
+    void multiply(double f);
+
+private:
+};
+}// namespace Surface
 
 #endif
+

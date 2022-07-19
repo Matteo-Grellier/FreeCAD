@@ -20,40 +20,34 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef FEATURE_BLEND_CURVE_H
-#define FEATURE_BLEND_CURVE_H
+#ifndef BLEND_CURVE_H
+#define BLEND_CURVE_H
 
 #include <App/PropertyLinks.h>
 #include <App/PropertyStandard.h>
 #include <App/PropertyUnits.h>
-#include <Mod/Part/App/FeaturePartSpline.h>
+#include <Mod/Part/App/PartFeature.h>
 #include <Mod/Surface/SurfaceGlobal.h>
+#include <Mod/Surface/App/Blending/BlendPoint.h>
 
 namespace Surface
 {
 
-class SurfaceExport FeatureBlendCurve: public Part::Spline
+
+class SurfaceExport BlendCurve
 {
-    PROPERTY_HEADER_WITH_OVERRIDE(Surface::FeatureBlendCurve);
-
 public:
-    FeatureBlendCurve();
+    std::vector<BlendPoint> blendPoints;
 
-    
+    BlendCurve(std::vector<BlendPoint> blendPointsList);
 
-    App::PropertyLinkSub StartEdge;
-    App::PropertyFloat StartParameter;
-    App::PropertyInteger StartContinuity;
-    App::PropertyFloat StartSize;
+    opencascade::handle<Geom_BezierCurve> Interpolate(std::vector<BlendPoint> blendPoints);
 
-    App::PropertyLinkSub EndEdge;
-    App::PropertyFloat EndParameter;
-    App::PropertyInteger EndContinuity;
-    App::PropertyFloat EndSize;
+    ~BlendCurve();
 
-    App::DocumentObjectExecReturn *execute(void);
+private:
 };
-
-}//Namespace Surface
+}// namespace Surface
 
 #endif
+

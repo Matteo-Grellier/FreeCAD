@@ -23,6 +23,8 @@ SET(Blending_SRCS
     Blending/BlendPoint.h
     Blending/FeatureBlendSurface.cpp
     Blending/FeatureBlendSurface.h
+    Blending/BlendCurve.cpp
+    Blending/BlendCurve.h
 )
 
 SET(Surface_SRCS
