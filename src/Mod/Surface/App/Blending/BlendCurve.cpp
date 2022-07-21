@@ -24,8 +24,13 @@
 #include "../PreCompiled.h"
 #ifndef _PreComp_
 #include <Base/Vector3D.h>
+#include <Geom_BezierCurve.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
+#include <Geom_BSplineSurface.hxx>
+#include <GeomAPI_PointsToBSplineSurface.hxx>
 #include <Precision.hxx>
 #include <Standard_Version.hxx>
+#include <Mod/Part/App/Geometry.h>
 #include <TopoDS.hxx>
 #include <gp_Pnt.hxx>
 # include <BSplCLib.hxx>
@@ -58,7 +63,7 @@ BlendCurve::BlendCurve(std::vector<BlendPoint> blendPointsList)
     
 }
 
-opencascade::handle<Geom_BezierCurve> BlendCurve::Interpolate(std::vector<BlendPoint> blendPoints)
+Handle(Geom_BezierCurve) BlendCurve::Interpolate()
 {
     int nb_pts = blendPoints.size();
     try {
@@ -120,6 +125,7 @@ opencascade::handle<Geom_BezierCurve> BlendCurve::Interpolate(std::vector<BlendP
         }
 
         Handle(Geom_BezierCurve) bezier = new Geom_BezierCurve(poles);
+
         return bezier;
     }
     catch (Standard_Failure &e)

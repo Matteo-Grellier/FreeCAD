@@ -22,7 +22,8 @@
 
 #ifndef BLEND_CURVE_H
 #define BLEND_CURVE_H
-
+#include <Geom_BezierCurve.hxx>
+#include <Mod/Part/App/Geometry.h>
 #include <App/PropertyLinks.h>
 #include <App/PropertyStandard.h>
 #include <App/PropertyUnits.h>
@@ -41,9 +42,9 @@ public:
 
     BlendCurve(std::vector<BlendPoint> blendPointsList);
 
-    opencascade::handle<Geom_BezierCurve> Interpolate(std::vector<BlendPoint> blendPoints);
+    
+    Handle(Geom_BezierCurve) Interpolate();
 
-    ~BlendCurve();
 
 private:
 };

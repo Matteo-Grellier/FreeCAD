@@ -39,19 +39,28 @@ class SurfaceExport FeatureBlendCurve: public Part::Spline
 public:
     FeatureBlendCurve();
 
-    
-
     App::PropertyLinkSub StartEdge;
-    App::PropertyFloat StartParameter;
+    App::PropertyFloatConstraint StartParameter;
     App::PropertyInteger StartContinuity;
     App::PropertyFloat StartSize;
 
     App::PropertyLinkSub EndEdge;
-    App::PropertyFloat EndParameter;
+    App::PropertyFloatConstraint EndParameter;
     App::PropertyInteger EndContinuity;
     App::PropertyFloat EndSize;
+    App::DocumentObjectExecReturn *execute(void) override;
+    short mustExecute() const override;
+    const char *getViewProviderName(void) const override
+    {
+        return "SurfaceGui::ViewProviderBlendCurve";
+    }
 
-    App::DocumentObjectExecReturn *execute(void);
+
+private:
+    double RelativeToRealParameters(double, double, double);
+
+protected:
+    virtual void onChanged(const App::Property *prop) override;
 };
 
 }//Namespace Surface

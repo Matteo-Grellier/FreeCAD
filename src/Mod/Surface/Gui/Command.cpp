@@ -61,6 +61,8 @@
 #include <App/PropertyUnits.h>
 #include <App/PropertyLinks.h>
 #include "Mod/Part/App/PartFeature.h"
+#include <BRepAdaptor_Curve.hxx>
+#include <GeomAPI_ProjectPointOnCurve.hxx>
 
 
 //===========================================================================
@@ -284,6 +286,32 @@ void CmdBlendCurve::activated(int)
     std::string edge[2];
     std::string featName = getUniqueObjectName("BlendCurve");
     std::vector<Gui::SelectionObject> sel = getSelection().getSelectionEx(0, Part::Feature::getClassTypeId());
+    //std::vector<Base::Vector3d> pickedPoints = sel[0].getPickedPoints();
+    //App::DocumentObject *obj1 = sel[0].getObject();
+    //App::DocumentObject *obj2 = sel[1].getObject();
+    //std::vector<std::string> edge1SubName =  sel[0].getSubNames();
+    //std::vector<std::string> edge2SubName =  sel[1].getSubNames();
+
+    //TopoDS_Shape edge1 = static_cast<Part::Feature *>(obj1)
+    //                         ->Shape.getShape()
+    //                         .getSubShape(edge1SubName[0].c_str());
+    //if (edge1.IsNull() || edge1.ShapeType() != TopAbs_EDGE)
+    //    return;
+    //TopoDS_Shape edge2 = static_cast<Part::Feature *>(obj2)
+    //                         ->Shape.getShape()
+    //                         .getSubShape(edge2SubName[0].c_str());
+    //if (edge2.IsNull() || edge2.ShapeType() != TopAbs_EDGE)
+    //    return;
+
+    //const TopoDS_Edge &e1 = TopoDS::Edge(edge1);
+    //BRepAdaptor_Curve adapt1(e1);
+    //gp_Pnt pnt1(pickedPoints[0].x, pickedPoints[0].y, pickedPoints[0].z);
+
+    //GeomAdaptor_Curve geomCurve = adapt1.Curve();
+    //GeomAPI_ProjectPointOnCurve geomAPI(pnt1, geomCurve.Curve());
+    //double par = geomAPI.LowerDistanceParameter();
+
+    //edge2.Curve.closestParameter(vec, par)
 
     objName[0] = sel[0].getFeatName();
     edge[0] = sel[0].getSubNames()[0];
@@ -297,7 +325,7 @@ void CmdBlendCurve::activated(int)
         edge[1] = sel[1].getSubNames()[0];
     }
     openCommand(QT_TRANSLATE_NOOP("Command", "Blend Curve"));
-    doCommand(Doc, "App.ActiveDocument.addObject(\"Surface::BlendCurve\",\"%s\")", featName.c_str());
+    doCommand(Doc, "App.ActiveDocument.addObject(\"Surface::FeatureBlendCurve\",\"%s\")", featName.c_str());
     doCommand(Doc, "App.ActiveDocument.%s.StartEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[0].c_str(), edge[0].c_str());
     doCommand(Doc, "App.ActiveDocument.%s.EndEdge = (App.getDocument('%s').getObject('%s'),['%s'])", featName.c_str(), docName.c_str(), objName[1].c_str(), edge[1].c_str());
     updateActive();
