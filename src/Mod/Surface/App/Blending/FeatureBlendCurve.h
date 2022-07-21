@@ -28,6 +28,7 @@
 #include <App/PropertyUnits.h>
 #include <Mod/Part/App/FeaturePartSpline.h>
 #include <Mod/Surface/SurfaceGlobal.h>
+#include <Mod/Surface/App/Blending/BlendPoint.h>
 
 namespace Surface
 {
@@ -39,19 +40,35 @@ class SurfaceExport FeatureBlendCurve: public Part::Spline
 public:
     FeatureBlendCurve();
 
-    
-
     App::PropertyLinkSub StartEdge;
-    App::PropertyFloat StartParameter;
-    App::PropertyInteger StartContinuity;
+    App::PropertyFloatConstraint StartParameter;
+    App::PropertyIntegerConstraint StartContinuity;
     App::PropertyFloat StartSize;
 
     App::PropertyLinkSub EndEdge;
-    App::PropertyFloat EndParameter;
-    App::PropertyInteger EndContinuity;
+    App::PropertyFloatConstraint EndParameter;
+    App::PropertyIntegerConstraint EndContinuity;
     App::PropertyFloat EndSize;
 
-    App::DocumentObjectExecReturn *execute(void);
+    Standard_Integer maxDegree;
+    Standard_Integer maxPossiblyDegreeEnd;
+    Standard_Integer maxPossiblyDegreeStart;
+
+    App::DocumentObjectExecReturn *execute(void) override;
+    short mustExecute() const override;
+    const char *getViewProviderName(void) const override
+    {
+        return "SurfaceGui::ViewProviderBlendCurve";
+    }
+
+
+private:
+    BlendPoint GetBlendPoint(App::DocumentObject *link, double, int Continuity, double size, std::vector<std::string> edgeSV);
+    double RelativeToRealParameters(double, double, double);
+    bool lockOnChangeMutex;
+
+protected:
+    virtual void onChanged(const App::Property *prop) override;
 };
 
 }//Namespace Surface
