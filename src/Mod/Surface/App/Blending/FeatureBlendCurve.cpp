@@ -28,35 +28,39 @@
 #include <Standard_Version.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <TopoDS.hxx>
+#include <Base/Tools.h>
 #include <Geom_Curve.hxx>
 #include <gp_Pnt.hxx>
 #endif
 #include "FeatureBlendCurve.h"
 #include "Mod/Surface/App/Blending/BlendPoint.h"
 #include "Mod/Surface/App/Blending/BlendCurve.h"
-#include "Mod/Surface/App/Blending/BlendCurve.h"
 #include <GeomAPI_PointsToBSplineSurface.hxx>
 
 using namespace Surface;
 
-const App::PropertyFloatConstraint::Constraints StartParameterConstraint = {0.0, 1.0, 0.01};
-const App::PropertyFloatConstraint::Constraints EndParameterConstraint = {0.0, 1.0, 0.01};
+const App::PropertyFloatConstraint::Constraints StartParameterConstraint = {0.0, 1.0, 0.05};
+const App::PropertyFloatConstraint::Constraints EndParameterConstraint = {0.0, 1.0, 0.05};
 
 PROPERTY_SOURCE(Surface::FeatureBlendCurve, Part::Spline)
 
-FeatureBlendCurve::FeatureBlendCurve()
+FeatureBlendCurve::FeatureBlendCurve() : lockOnChangeMutex(false)
 {
     ADD_PROPERTY_TYPE(StartEdge, (nullptr), "FirstEdge", App::Prop_None, "");
     ADD_PROPERTY_TYPE(StartContinuity, (2), "FirstEdge", App::Prop_None, "");
-    ADD_PROPERTY_TYPE(StartParameter, (1.0f), "FirstEdge", App::Prop_None, "");
+    ADD_PROPERTY_TYPE(StartParameter, (0.0f), "FirstEdge", App::Prop_None, "");
     StartParameter.setConstraints(&StartParameterConstraint);
     ADD_PROPERTY_TYPE(StartSize, (1.0f), "FirstEdge", App::Prop_None, "");
 
     ADD_PROPERTY_TYPE(EndEdge, (nullptr), "SecondEdge", App::Prop_None, "");
     ADD_PROPERTY_TYPE(EndContinuity, (2), "SecondEdge", App::Prop_None, "");
-    ADD_PROPERTY_TYPE(EndParameter, (1.0f), "SecondEdge", App::Prop_None, "");
+    ADD_PROPERTY_TYPE(EndParameter, (0.0f), "SecondEdge", App::Prop_None, "");
     EndParameter.setConstraints(&EndParameterConstraint);
     ADD_PROPERTY_TYPE(EndSize, (1.0f), "SecondEdge", App::Prop_None, "");
+    Handle(Geom_BezierCurve) maxDegreeCurve;
+    maxDegree = maxDegreeCurve->MaxDegree();
+    Standard_Integer maxPossiblyDegreeEnd = 25 - StartContinuity.getValue();
+    Standard_Integer maxPossiblyDegreeStart = 25 - EndContinuity.getValue();
 }
 
 short FeatureBlendCurve::mustExecute() const
@@ -80,82 +84,68 @@ short FeatureBlendCurve::mustExecute() const
     return 0;
 }
 
-App::DocumentObjectExecReturn *FeatureBlendCurve::execute(void)
+BlendPoint FeatureBlendCurve::GetBlendPoint(App::DocumentObject *link, double param, int continuity, double size, std::vector<std::string> edgeSV)
 {
-    App::DocumentObject *edgePart1 = StartEdge.getValue();
-    if (!edgePart1 || !edgePart1->getTypeId().isDerivedFrom(Part::Feature::getClassTypeId()))
-        return new App::DocumentObjectExecReturn("No shape linked.");
-    const auto &edge1Name = StartEdge.getSubValues();
-    if (edge1Name.size() != 1)
-        return new App::DocumentObjectExecReturn("Not exactly one sub-shape linked.");
+    //App::DocumentObject *edgePart = link.getValue();
+    if (!link || !link->getTypeId().isDerivedFrom(Part::Feature::getClassTypeId())) {
+        Standard_Failure::Raise("Failed to get feature object");
+    }
+    //const auto &edgeName = edgeSV;
+    if (edgeSV.size() != 1) {
+        Standard_Failure::Raise("no edge name");
+    }
+        //return error;//error
 
-    TopoDS_Shape edge1 = static_cast<Part::Feature *>(edgePart1)
+    TopoDS_Shape edge = static_cast<Part::Feature *>(link)
                              ->Shape.getShape()
-                             .getSubShape(edge1Name[0].c_str());
-    if (edge1.IsNull() || edge1.ShapeType() != TopAbs_EDGE)
-        return new App::DocumentObjectExecReturn("Sub-shape is not a edge.");
-
-    App::DocumentObject *edgePart2 = EndEdge.getValue();
-    if (!edgePart2 || !edgePart2->getTypeId().isDerivedFrom(Part::Feature::getClassTypeId()))
-        return new App::DocumentObjectExecReturn("No shape linked.");
-    const auto &edge2Name = EndEdge.getSubValues();
-    if (edge2Name.size() != 1)
-        return new App::DocumentObjectExecReturn("Not exactly one sub-shape linked.");
-
-    TopoDS_Shape edge2 = static_cast<Part::Feature *>(edgePart2)
-                             ->Shape.getShape()
-                             .getSubShape(edge2Name[0].c_str());
-    if (edge2.IsNull() || edge2.ShapeType() != TopAbs_EDGE)
-        return new App::DocumentObjectExecReturn("Sub-shape is not a edge.");
-
-    const TopoDS_Edge &e1 = TopoDS::Edge(edge1);
-    BRepAdaptor_Curve adapt1(e1);
-    double fp1 = adapt1.FirstParameter();
-    double lp1 = adapt1.LastParameter();
-
-    const TopoDS_Edge &e2 = TopoDS::Edge(edge2);
-    BRepAdaptor_Curve adapt2(e2);
-    double fp2 = adapt2.FirstParameter();
-    double lp2 = adapt2.LastParameter();
-
-
-    double RealPar1 = RelativeToRealParameters(StartParameter.getValue(), fp1, lp1);
-    double RealPar2 = RelativeToRealParameters(EndParameter.getValue(), fp2, lp2);
-
-    std::vector<Base::Vector3d> constraints1;
-    std::vector<Base::Vector3d> constraints2;
-
-    gp_Pnt Pt1;
-    gp_Pnt Pt2;
-
-    adapt1.D0(RealPar1, Pt1);
-    Base::Vector3d bv(Pt1.X(), Pt1.Y(), Pt1.Z());
-    constraints1.push_back(bv);
-
-    for (size_t i = 1; i <= StartContinuity.getValue(); i++) {
-        gp_Vec v1 = adapt1.DN(RealPar1, i);
-        Base::Vector3d bbv1(v1.X(), v1.Y(), v1.Z());
-        constraints1.push_back(bbv1);
+                             .getSubShape(edgeSV[0].c_str());
+    if (edge.IsNull() || edge.ShapeType() != TopAbs_EDGE) {
+        Standard_Failure::Raise("failed to get edge");
     }
 
-    adapt2.D0(RealPar2, Pt2);
-    Base::Vector3d bv2(Pt2.X(), Pt2.Y(), Pt2.Z());
-    constraints2.push_back(bv2);
+    const TopoDS_Edge &e = TopoDS::Edge(edge);
+    BRepAdaptor_Curve adapt(e);
+    double fp = adapt.FirstParameter();
+    double lp = adapt.LastParameter();
+
+    double RealPar = RelativeToRealParameters(param, fp, lp);
+
+    std::vector<Base::Vector3d> constraints;
+    gp_Pnt Pt;
+
+    adapt.D0(RealPar, Pt);
+    Base::Vector3d bv(Pt.X(), Pt.Y(), Pt.Z());
+    constraints.push_back(bv);
+
+    for (size_t i = 1; i <= continuity; i++) {
+        gp_Vec v1 = adapt.DN(RealPar, i);
+        Base::Vector3d bbv1(v1.X(), v1.Y(), v1.Z());
+        constraints.push_back(bbv1);
+    }
+
     
 
-    for (size_t i = 1; i <= EndContinuity.getValue(); i++) {
-        gp_Vec v2 = adapt2.DN(RealPar2, i);
-        Base::Vector3d bbv2(v2.X(), v2.Y(), v2.Z());
-        constraints2.push_back(bbv2);
-    }
+    BlendPoint bp(constraints);
+    bp.multiply(size);
 
-    BlendPoint bp1(constraints1);
-    BlendPoint bp2(constraints2);
 
-    bp1.multiply(StartSize.getValue());
-    bp2.multiply(EndSize.getValue());
+    return bp;
+}
+
+App::DocumentObjectExecReturn *FeatureBlendCurve::execute(void)
+{
+    //App::PropertyLinkSub edge1 = StartEdge;
+
+    App::DocumentObject *edgePart = StartEdge.getValue();
+    App::DocumentObject *edgePart2 = EndEdge.getValue();
+    std::vector<std::string> edgeSV1 = StartEdge.getSubValues();
+    std::vector<std::string> edgeSV2 = EndEdge.getSubValues();
+
+    BlendPoint bp1 = GetBlendPoint(edgePart, StartParameter.getValue(), StartContinuity.getValue(), StartSize.getValue(), edgeSV1);
+    BlendPoint bp2 = GetBlendPoint(edgePart2, EndParameter.getValue(), EndContinuity.getValue(), EndSize.getValue(), edgeSV2);
 
     std::vector<BlendPoint> blendPointsList;
+
     blendPointsList.push_back(bp1);
     blendPointsList.push_back(bp2);
 
@@ -172,6 +162,7 @@ App::DocumentObjectExecReturn *FeatureBlendCurve::execute(void)
 }
 
 
+
 double FeatureBlendCurve::RelativeToRealParameters(double relativeValue, double fp, double lp)
 {
     return fp + relativeValue * (lp - fp);
@@ -179,5 +170,37 @@ double FeatureBlendCurve::RelativeToRealParameters(double relativeValue, double 
 
 void FeatureBlendCurve::onChanged(const App::Property *prop)
 {
+    // using a mutex and lock to protect a recursive calling when setting the new values
+    if (lockOnChangeMutex)
+        return;
+    Base::StateLocker lock(lockOnChangeMutex);
+
+    if (prop == &StartContinuity) {
+        auto changedStartProp = dynamic_cast<const App::PropertyInteger *>(prop);
+
+        if (changedStartProp->getValue() > (maxDegree - 2 - EndContinuity.getValue())) {
+            
+            StartContinuity.setValue(maxDegree - 2 - EndContinuity.getValue());
+        }
+        else if (changedStartProp->getValue() < 0) {
+            
+            StartContinuity.setValue(0);
+        }
+        
+    }
+    else if (prop == &EndContinuity) {
+        auto changedEndProp = dynamic_cast<const App::PropertyInteger *>(prop);
+
+        if (changedEndProp->getValue() > (maxDegree - 2 - StartContinuity.getValue())) {
+            EndContinuity.setValue(maxDegree - 2 - StartContinuity.getValue());
+        }
+        else if (changedEndProp->getValue() < 0) {
+            EndContinuity.setValue(0);
+        }
+        
+    }
+       
+
+
     Part::Spline::onChanged(prop);
 }

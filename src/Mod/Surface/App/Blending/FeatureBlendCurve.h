@@ -28,6 +28,7 @@
 #include <App/PropertyUnits.h>
 #include <Mod/Part/App/FeaturePartSpline.h>
 #include <Mod/Surface/SurfaceGlobal.h>
+#include <Mod/Surface/App/Blending/BlendPoint.h>
 
 namespace Surface
 {
@@ -41,13 +42,18 @@ public:
 
     App::PropertyLinkSub StartEdge;
     App::PropertyFloatConstraint StartParameter;
-    App::PropertyInteger StartContinuity;
+    App::PropertyIntegerConstraint StartContinuity;
     App::PropertyFloat StartSize;
 
     App::PropertyLinkSub EndEdge;
     App::PropertyFloatConstraint EndParameter;
-    App::PropertyInteger EndContinuity;
+    App::PropertyIntegerConstraint EndContinuity;
     App::PropertyFloat EndSize;
+
+    Standard_Integer maxDegree;
+    Standard_Integer maxPossiblyDegreeEnd;
+    Standard_Integer maxPossiblyDegreeStart;
+
     App::DocumentObjectExecReturn *execute(void) override;
     short mustExecute() const override;
     const char *getViewProviderName(void) const override
@@ -57,7 +63,9 @@ public:
 
 
 private:
+    BlendPoint GetBlendPoint(App::DocumentObject *link, double, int Continuity, double size, std::vector<std::string> edgeSV);
     double RelativeToRealParameters(double, double, double);
+    bool lockOnChangeMutex;
 
 protected:
     virtual void onChanged(const App::Property *prop) override;
