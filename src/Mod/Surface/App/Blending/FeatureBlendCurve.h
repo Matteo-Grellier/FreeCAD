@@ -51,8 +51,6 @@ public:
     App::PropertyFloat EndSize;
 
     Standard_Integer maxDegree;
-    Standard_Integer maxPossiblyDegreeEnd;
-    Standard_Integer maxPossiblyDegreeStart;
 
     App::DocumentObjectExecReturn *execute(void) override;
     short mustExecute() const override;
@@ -63,7 +61,7 @@ public:
 
 
 private:
-    BlendPoint GetBlendPoint(App::DocumentObject *link, double, int Continuity, double size, std::vector<std::string> edgeSV);
+    BlendPoint GetBlendPoint(App::PropertyLinkSub &link, App::PropertyFloatConstraint &param, App::PropertyIntegerConstraint &Continuity, App::PropertyFloat &size);
     double RelativeToRealParameters(double, double, double);
     bool lockOnChangeMutex;
 

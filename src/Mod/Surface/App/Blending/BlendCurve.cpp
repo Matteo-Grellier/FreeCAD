@@ -47,6 +47,7 @@ using namespace Surface;
 
 BlendCurve::BlendCurve(std::vector<BlendPoint> blendPointsList)
 {
+    // Retrieve number of blendPoints and push them into blendPoints.
     int nb_pts = blendPointsList.size();
 
     if (nb_pts > 2) {
@@ -63,7 +64,7 @@ BlendCurve::BlendCurve(std::vector<BlendPoint> blendPointsList)
     
 }
 
-Handle(Geom_BezierCurve) BlendCurve::Interpolate()
+Handle(Geom_BezierCurve) BlendCurve::compute()
 {
     int nb_pts = blendPoints.size();
     try {
@@ -77,7 +78,8 @@ Handle(Geom_BezierCurve) BlendCurve::Interpolate()
         for (int i = 0; i < nb_pts; ++i) {
             num_poles += blendPoints[i].vectors.size();
         }
-        if (num_poles > 25)// use Geom_BezierCurve max degree
+        Handle(Geom_BezierCurve) curve;
+        if (num_poles > curve->MaxDegree())// use Geom_BezierCurve max degree
             Standard_Failure::Raise("number of constraints exceeds bezier curve capacity");
         // create a bezier-type knot sequence
         TColStd_Array1OfReal knots(1, 2 * num_poles);
