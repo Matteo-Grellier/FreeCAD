@@ -646,7 +646,7 @@ public:
             dot = next;
         }
 
-        for(auto v : nodeMap) {
+        for(const auto& v : nodeMap) {
             if(v.second->getDetail(true,type,subname,det,path))
                 return true;
         }
@@ -2582,7 +2582,8 @@ void ViewProviderLink::_setupContextMenu(
             || (ext->getLinkPlacementProperty() && !ext->getLinkPlacementProperty()->isReadOnly()))
     {
         bool found = false;
-        for(auto action : menu->actions()) {
+        const auto actions = menu->actions();
+        for(auto action : actions) {
             if(action->data().toInt() == ViewProvider::Transform) {
                 found = true;
                 break;
@@ -2598,7 +2599,8 @@ void ViewProviderLink::_setupContextMenu(
 
     if(ext->getColoredElementsProperty()) {
         bool found = false;
-        for(auto action : menu->actions()) {
+        const auto actions = menu->actions();
+        for(auto action : actions) {
             if(action->data().toInt() == ViewProvider::Color) {
                 action->setText(QObject::tr("Override colors..."));
                 found = true;
@@ -2874,19 +2876,25 @@ void ViewProviderLink::unsetEditViewer(Gui::View3DInventorViewer* viewer)
     Gui::Control().closeDialog();
 }
 
-Base::Placement ViewProviderLink::currentDraggingPlacement() const{
-    assert(pcDragger);
+Base::Placement ViewProviderLink::currentDraggingPlacement() const
+{
+    // if there isn't an active dragger return a default placement
+    if (!pcDragger)
+        return Base::Placement();
+
     SbVec3f v;
     SbRotation r;
-    if(useCenterballDragger) {
+    if (useCenterballDragger) {
         SoCenterballDragger *dragger = static_cast<SoCenterballDragger*>(pcDragger.get());
         v = dragger->center.getValue();
         r = dragger->rotation.getValue();
-    }else{
+    }
+    else {
         SoFCCSysDragger *dragger = static_cast<SoFCCSysDragger*>(pcDragger.get());
         v = dragger->translation.getValue();
         r = dragger->rotation.getValue();
     }
+
     float q1,q2,q3,q4;
     r.getValue(q1,q2,q3,q4);
     return Base::Placement(Base::Vector3d(v[0],v[1],v[2]),Base::Rotation(q1,q2,q3,q4));

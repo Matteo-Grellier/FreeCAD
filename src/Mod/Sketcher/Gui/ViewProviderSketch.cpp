@@ -352,7 +352,7 @@ void ViewProviderSketch::forceUpdateData()
 void ViewProviderSketch::activateHandler(DrawSketchHandler *newHandler)
 {
     assert(editCoinManager);
-    assert(sketchHandler == nullptr);
+    assert(!sketchHandler);
 
     sketchHandler = std::unique_ptr<DrawSketchHandler>(newHandler);
     Mode = STATUS_SKETCH_UseHandler;
@@ -3022,7 +3022,7 @@ void ViewProviderSketch::unsetEdit(int ModNum)
                     "ActiveSketch.ViewObject.TempoVis = None\n"
                     "del(tv)\n"
                     "del(ActiveSketch)\n"
-                    ).arg(QString::fromLatin1(getDocument()->getDocument()->getName())).arg(
+                    ).arg(QString::fromLatin1(getDocument()->getDocument()->getName()),
                           QString::fromLatin1(getSketchObject()->getNameInDocument()));
         QByteArray cmdstr_bytearray = cmdstr.toLatin1();
         Gui::Command::runCommand(Gui::Command::Gui, cmdstr_bytearray);
@@ -3046,7 +3046,7 @@ void ViewProviderSketch::setEditViewer(Gui::View3DInventorViewer* viewer, int Mo
                         "  ActiveSketch.ViewObject.TempoVis.saveCamera()\n"
                         "  if ActiveSketch.ViewObject.ForceOrtho:\n"
                         "    ActiveSketch.ViewObject.Document.ActiveView.setCameraType('Orthographic')\n"
-                        ).arg(QString::fromLatin1(getDocument()->getDocument()->getName())).arg(
+                        ).arg(QString::fromLatin1(getDocument()->getDocument()->getName()),
                               QString::fromLatin1(getSketchObject()->getNameInDocument()));
             QByteArray cmdstr_bytearray = cmdstr.toLatin1();
             Gui::Command::runCommand(Gui::Command::Gui, cmdstr_bytearray);

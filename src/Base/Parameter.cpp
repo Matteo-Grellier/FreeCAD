@@ -700,7 +700,7 @@ std::string ParameterGrp::GetASCII(const char* Name, const char * pPreset) const
     DOMElement *pcElem = FindElement(_pGroupNode,"FCText",Name);
     // if not return preset
     if (!pcElem) {
-        if (pPreset==nullptr)
+        if (!pPreset)
             return std::string("");
         else
             return std::string(pPreset);
@@ -923,7 +923,7 @@ void ParameterGrp::Clear(void)
     }
 
     // remove group handles
-    for (auto it : removeGrp) {
+    for (const auto& it : removeGrp) {
         auto pos = _GroupMap.find(it);
         vecNodes.push_back(pos->second->_pGroupNode);
         _GroupMap.erase(pos->first);

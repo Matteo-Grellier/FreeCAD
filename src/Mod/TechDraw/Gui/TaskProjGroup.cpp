@@ -144,9 +144,8 @@ TaskProjGroup::~TaskProjGroup()
 void TaskProjGroup::saveGroupState()
 {
 //    Base::Console().Message("TPG::saveGroupState()\n");
-    if (multiView == nullptr) {
+    if (!multiView)
         return;
-    }
 
     m_saveSource   = multiView->Source.getValues();
     m_saveProjType = multiView->ProjectionType.getValueAsString();
@@ -160,7 +159,7 @@ void TaskProjGroup::saveGroupState()
 
     for( const auto it : multiView->Views.getValues() ) {
         auto view( dynamic_cast<DrawProjGroupItem *>(it) );
-        if (view != nullptr) {
+        if (view) {
             m_saveViewNames.push_back(view->Type.getValueAsString());
         }
     }
@@ -170,9 +169,8 @@ void TaskProjGroup::saveGroupState()
 void TaskProjGroup::restoreGroupState()
 {
     Base::Console().Message("TPG::restoreGroupState()\n");
-    if (multiView == nullptr) {
+    if (!multiView)
         return;
-    }
 
     multiView->ProjectionType.setValue(m_saveProjType.c_str());
     multiView->ScaleType.setValue(m_saveScaleType.c_str());
@@ -194,7 +192,7 @@ void TaskProjGroup::viewToggled(bool toggle)
     bool changed = false;
     // Obtain name of checkbox
     QString viewName = sender()->objectName();
-    int index = viewName.mid(7).toInt();
+    int index = viewName.midRef(7).toInt();
     const char *viewNameCStr = viewChkIndexToCStr(index);
     if ( toggle && !multiView->hasProjection( viewNameCStr ) ) {
         Gui::Command::doCommand(Gui::Command::Doc,
@@ -441,7 +439,7 @@ const char * TaskProjGroup::viewChkIndexToCStr(int index)
     //   First Angle:  FBRight  B  FBL
     //                  Right   F   L  Rear
     //                 FTRight  T  FTL
-    assert (multiView != nullptr);
+    assert (multiView);
 
     bool thirdAngle = multiView->usedProjectionType().isValue("Third Angle");
     switch(index) {
@@ -460,9 +458,8 @@ const char * TaskProjGroup::viewChkIndexToCStr(int index)
 }
 void TaskProjGroup::setupViewCheckboxes(bool addConnections)
 {
-    if ( multiView == nullptr ) {
+    if (!multiView)
         return;
-    }
 
     // There must be a better way to construct this list...
     QCheckBox * viewCheckboxes[] = { ui->chkView0,
@@ -484,7 +481,7 @@ void TaskProjGroup::setupViewCheckboxes(bool addConnections)
         }
 
         const char *viewStr = viewChkIndexToCStr(i);
-        if ( viewStr != nullptr && multiView->hasProjection(viewStr) ) {
+        if (viewStr && multiView->hasProjection(viewStr)) {
             box->setCheckState(Qt::Checked);
         } else {
             box->setCheckState(Qt::Unchecked);
@@ -501,9 +498,9 @@ void TaskProjGroup::setUiPrimary()
 QString TaskProjGroup::formatVector(Base::Vector3d v)
 {
     QString data = QString::fromLatin1("[%1 %2 %3]")
-        .arg(QLocale().toString(v.x, 'f', 2))
-        .arg(QLocale().toString(v.y, 'f', 2))
-        .arg(QLocale().toString(v.z, 'f', 2));
+        .arg(QLocale().toString(v.x, 'f', 2),
+             QLocale().toString(v.y, 'f', 2),
+             QLocale().toString(v.z, 'f', 2));
     return data;
 }
 

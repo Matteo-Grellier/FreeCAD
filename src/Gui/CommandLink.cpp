@@ -356,7 +356,7 @@ static void linkConvert(bool unlink) {
     // PropertyLinkBase::CopyOnLinkReplace().
 
     std::map<std::pair<App::DocumentObject*,App::DocumentObject*>, Info> infos;
-    for(auto sel : TreeWidget::getSelection()) {
+    for(const auto& sel : TreeWidget::getSelection()) {
         auto obj = sel.vp->getObject();
         auto parent = sel.parentVp;
         if(!parent) {
@@ -734,7 +734,7 @@ static App::DocumentObject *getSelectedLink(bool finalLink, std::string *subname
 }
 
 bool StdCmdLinkSelectLinked::isActive() {
-    return getSelectedLink(false)!=nullptr;
+    return getSelectedLink(false) != nullptr;
 }
 
 void StdCmdLinkSelectLinked::activated(int)
@@ -755,7 +755,8 @@ void StdCmdLinkSelectLinked::activated(int)
             doc->setActiveView(vp);
         }
     } else {
-        for(auto tree : getMainWindow()->findChildren<TreeWidget*>())
+        const auto trees = getMainWindow()->findChildren<TreeWidget*>();
+        for(auto tree : trees)
             tree->selectLinkedObject(linked);
     }
     Selection().selStackPush();
@@ -779,7 +780,7 @@ StdCmdLinkSelectLinkedFinal::StdCmdLinkSelectLinkedFinal()
 }
 
 bool StdCmdLinkSelectLinkedFinal::isActive() {
-    return getSelectedLink(true)!=nullptr;
+    return getSelectedLink(true) != nullptr;
 }
 
 void StdCmdLinkSelectLinkedFinal::activated(int) {
@@ -790,7 +791,8 @@ void StdCmdLinkSelectLinkedFinal::activated(int) {
     }
     Selection().selStackPush();
     Selection().clearCompleteSelection();
-    for(auto tree : getMainWindow()->findChildren<TreeWidget*>())
+    const auto trees = getMainWindow()->findChildren<TreeWidget*>();
+    for(auto tree : trees)
         tree->selectLinkedObject(linked);
     Selection().selStackPush();
 }
@@ -825,7 +827,8 @@ void StdCmdLinkSelectAllLinks::activated(int)
         return;
     Selection().selStackPush();
     Selection().clearCompleteSelection();
-    for(auto tree : getMainWindow()->findChildren<TreeWidget*>())
+    const auto trees = getMainWindow()->findChildren<TreeWidget*>();
+    for(auto tree : trees)
         tree->selectAllLinks(sels[0].pObject);
     Selection().selStackPush();
 }

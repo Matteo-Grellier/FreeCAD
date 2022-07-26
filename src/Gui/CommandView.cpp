@@ -1814,7 +1814,7 @@ void StdViewScreenShot::activated(int iMsg)
 
         if (fd.exec() == QDialog::Accepted) {
             selFilter = fd.selectedNameFilter();
-            QString fn = fd.selectedFiles().front();
+            QString fn = fd.selectedFiles().constFirst();
             // We must convert '\' path separators to '/' before otherwise
             // Python would interpret them as escape sequences.
             fn.replace(QLatin1Char('\\'), QLatin1Char('/'));
@@ -1942,7 +1942,7 @@ void StdCmdViewCreate::activated(int iMsg)
 
 bool StdCmdViewCreate::isActive(void)
 {
-    return (getActiveGuiDocument()!=nullptr);
+    return (getActiveGuiDocument() != nullptr);
 }
 
 //===========================================================================
@@ -2995,7 +2995,7 @@ bool StdCmdTreeSelectAllInstances::isActive(void)
     if(!obj || !obj->getNameInDocument())
         return false;
     return dynamic_cast<ViewProviderDocumentObject*>(
-            Application::Instance->getViewProvider(obj))!=nullptr;
+            Application::Instance->getViewProvider(obj)) != nullptr;
 }
 
 void StdCmdTreeSelectAllInstances::activated(int iMsg)
@@ -3013,7 +3013,8 @@ void StdCmdTreeSelectAllInstances::activated(int iMsg)
         return;
     Selection().selStackPush();
     Selection().clearCompleteSelection();
-    for(auto tree : getMainWindow()->findChildren<TreeWidget*>())
+    const auto trees = getMainWindow()->findChildren<TreeWidget*>();
+    for(auto tree : trees)
         tree->selectAllInstances(*vpd);
     Selection().selStackPush();
 }
@@ -3170,7 +3171,7 @@ bool StdCmdTextureMapping::isActive(void)
 {
     Gui::MDIView* view = getMainWindow()->activeWindow();
     return view && view->isDerivedFrom(Gui::View3DInventor::getClassTypeId())
-                && (Gui::Control().activeDialog()==nullptr);
+                && (Gui::Control().activeDialog() == nullptr);
 }
 
 DEF_STD_CMD(StdCmdDemoMode)
@@ -3521,7 +3522,8 @@ StdTreeDrag::StdTreeDrag()
 void StdTreeDrag::activated(int)
 {
     if(Gui::Selection().hasSelection()) {
-        for(auto tree : getMainWindow()->findChildren<TreeWidget*>()) {
+        const auto trees = getMainWindow()->findChildren<TreeWidget*>();
+        for(auto tree : trees) {
             if(tree->isVisible()) {
                 tree->startDragging();
                 break;

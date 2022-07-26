@@ -1059,7 +1059,7 @@ void CmdTechDrawExtentGroup::activated(int iMsg)
 {
 //    Base::Console().Message("CMD::ExtentGrp - activated(%d)\n", iMsg);
     Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
-    if (dlg != nullptr) {
+    if (dlg) {
         QMessageBox::warning(Gui::getMainWindow(), QObject::tr("Task In Progress"),
             QObject::tr("Close active task dialog and try again."));
         return;
@@ -1153,7 +1153,7 @@ void CmdTechDrawHorizontalExtentDimension::activated(int iMsg)
     Q_UNUSED(iMsg);
 
     Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
-    if (dlg != nullptr) {
+    if (dlg) {
         QMessageBox::warning(Gui::getMainWindow(), QObject::tr("Task In Progress"),
             QObject::tr("Close active task dialog and try again."));
         return;
@@ -1185,7 +1185,7 @@ void execHExtent(Gui::Command* cmd)
     }
 
     baseFeat =  dynamic_cast<TechDraw::DrawViewPart *>(selection[0].getObject());
-    if( baseFeat == nullptr ) {
+    if (!baseFeat) {
         QMessageBox::warning(Gui::getMainWindow(), QObject::tr("Selection Error"),
                                 QObject::tr("No base View in Selection."));
         return;
@@ -1240,7 +1240,7 @@ void CmdTechDrawVerticalExtentDimension::activated(int iMsg)
     Q_UNUSED(iMsg);
 
     Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
-    if (dlg != nullptr) {
+    if (dlg) {
         QMessageBox::warning(Gui::getMainWindow(), QObject::tr("Task In Progress"),
             QObject::tr("Close active task dialog and try again."));
         return;
@@ -1273,7 +1273,7 @@ void execVExtent(Gui::Command* cmd)
 
 
     baseFeat =  dynamic_cast<TechDraw::DrawViewPart *>(selection[0].getObject());
-    if( baseFeat == nullptr ) {
+    if (!baseFeat) {
         QMessageBox::warning(Gui::getMainWindow(), QObject::tr("Selection Error"),
                                 QObject::tr("No base View in Selection."));
         return;
@@ -1481,9 +1481,8 @@ int _isValidSingleEdge(Gui::Command* cmd) {
     auto selection( cmd->getSelection().getSelectionEx() );
 
     auto objFeat( dynamic_cast<TechDraw::DrawViewPart *>(selection[0].getObject()) );
-    if( objFeat == nullptr ) {
+    if (!objFeat)
         return isInvalid;
-    }
 
     const std::vector<std::string> SubNames = selection[0].getSubNames();
     if (SubNames.size() != 1 ||
@@ -1579,7 +1578,7 @@ int _isValidEdgeToEdge(Gui::Command* cmd) {
     TechDraw::BaseGeomPtr geom0 = objFeat0->getGeomByIndex(GeoId0);
     TechDraw::BaseGeomPtr geom1 = objFeat0->getGeomByIndex(GeoId1);
 
-    if ((geom0 == nullptr) || (geom1 == nullptr)) {                                         // missing gometry
+    if (!geom0 || !geom1) {                                         // missing gometry
         Base::Console().Error("Logic Error: no geometry for GeoId: %d or GeoId: %d\n",GeoId0,GeoId1);
         return isInvalid;
     }
@@ -1634,7 +1633,7 @@ bool _isValidVertexToEdge(Gui::Command* cmd) {
     }
     e = objFeat0->getGeomByIndex(eId);
     v = objFeat0->getProjVertexByIndex(vId);
-    if ((e == nullptr) || (v == nullptr)) {
+    if (!e || !v) {
         Base::Console().Error("Logic Error: no geometry for GeoId: %d or GeoId: %d\n",eId,vId);
         return false;
     }

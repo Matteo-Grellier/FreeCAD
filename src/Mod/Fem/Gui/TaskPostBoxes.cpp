@@ -32,6 +32,8 @@
 
 # include <QApplication>
 # include <QMessageBox>
+# include <QSlider>
+# include <QToolTip>
 #endif
 
 #include <App/Document.h>
@@ -98,7 +100,7 @@ void PointMarker::customEvent(QEvent*)
     const SbVec3f& pt2 = vp->pCoords->point[1];
 
     if (!m_name.empty()) {
-        PointsChanged(pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]);
+        Q_EMIT PointsChanged(pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]);
         Gui::Command::doCommand(Gui::Command::Doc, "App.ActiveDocument.%s.Point1 = App.Vector(%f, %f, %f)", m_name.c_str(), pt1[0], pt1[1], pt1[2]);
         Gui::Command::doCommand(Gui::Command::Doc, "App.ActiveDocument.%s.Point2 = App.Vector(%f, %f, %f)", m_name.c_str(), pt2[0], pt2[1], pt2[2]);
     }
@@ -166,7 +168,7 @@ void DataMarker::customEvent(QEvent*)
     const SbVec3f& pt1 = vp->pCoords->point[0];
 
     if (!m_name.empty()) {
-        PointsChanged(pt1[0], pt1[1], pt1[2]);
+        Q_EMIT PointsChanged(pt1[0], pt1[1], pt1[2]);
         Gui::Command::doCommand(Gui::Command::Doc, "App.ActiveDocument.%s.Center = App.Vector(%f, %f, %f)", m_name.c_str(), pt1[0], pt1[1], pt1[2]);
     }
     Gui::Command::doCommand(Gui::Command::Doc, ObjectInvisible().c_str());
@@ -389,6 +391,7 @@ TaskPostDisplay::TaskPostDisplay(Gui::ViewProviderDocumentObject* view, QWidget*
     Base::Console().Log("Transparency %i: \n", trans);
     // sync the trancparency slider
     ui->Transparency->setValue(trans);
+    ui->Transparency->setToolTip(QString::number(trans) + QString::fromLatin1(" %"));
 }
 
 TaskPostDisplay::~TaskPostDisplay()
@@ -421,6 +424,9 @@ void TaskPostDisplay::on_VectorMode_activated(int i) {
 void TaskPostDisplay::on_Transparency_valueChanged(int i) {
 
     getTypedView<ViewProviderFemPostObject>()->Transparency.setValue(i);
+    ui->Transparency->setToolTip(QString::number(i) + QString::fromLatin1(" %"));
+    // highlight the tooltip
+    QToolTip::showText(QCursor::pos(), QString::number(i) + QString::fromLatin1(" %"), nullptr);
 }
 
 void TaskPostDisplay::applyPythonCode() {

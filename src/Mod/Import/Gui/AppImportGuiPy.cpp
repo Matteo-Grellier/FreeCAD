@@ -178,7 +178,7 @@ void OCAFBrowser::load(const TDF_Label& label, QTreeWidgetItem* item, const QStr
 
     Handle(TDataStd_Name) name;
     if (label.FindAttribute(TDataStd_Name::GetID(),name)) {
-        QString text = QString::fromLatin1("%1 %2").arg(s).arg(QString::fromUtf8(toString(name->Get()).c_str()));
+        QString text = QString::fromLatin1("%1 %2").arg(s, QString::fromUtf8(toString(name->Get()).c_str()));
         item->setText(0, text);
     }
 
@@ -423,10 +423,7 @@ private:
 
             Handle(XCAFApp_Application) hApp = XCAFApp_Application::GetApplication();
             Handle(TDocStd_Document) hDoc;
-            bool optionReadShapeCompoundMode = true;
             hApp->NewDocument(TCollection_ExtendedString("MDTV-CAF"), hDoc);
-            ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Mod/Import/hSTEP");
-            optionReadShapeCompoundMode = hGrp->GetBool("ReadShapeCompoundMode", optionReadShapeCompoundMode);
             ImportOCAFExt ocaf(hDoc, pcDoc, file.fileNamePure());
             FC_TIME_INIT(t);
             FC_DURATION_DECL_INIT2(d1,d2);
@@ -586,9 +583,8 @@ private:
             }
 
             if (legacy == Py_None) {
-                auto hGrp = App::GetApplication().GetParameterGroupByPath(
-                        "User parameter:BaseApp/Preferences/Mod/Import");
-                legacy = hGrp->GetBool("ExportLegacy",false) ? Py_True : Py_False;
+                Part::ImportExportSettings settings;
+                legacy = settings.getExportLegacy() ? Py_True : Py_False;
             }
 
             Import::ExportOCAF2 ocaf(hDoc, &getShapeColors);

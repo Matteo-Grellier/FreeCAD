@@ -696,7 +696,7 @@ PyObject*  DocumentObjectPy::getPathsByOutList(PyObject *args)
                 (o)->getDocumentObjectPtr();
         auto array = getDocumentObjectPtr()->getPathsByOutList(target);
         Py::List list;
-        for (auto it : array) {
+        for (const auto& it : array) {
             Py::List path;
             for (auto jt : it) {
                 path.append(Py::asObject(jt->getPyObject()));
@@ -710,87 +710,13 @@ PyObject*  DocumentObjectPy::getPathsByOutList(PyObject *args)
     }
 }
 
-PyObject *DocumentObjectPy::getCustomAttributes(const char* attr) const
+PyObject *DocumentObjectPy::getCustomAttributes(const char* ) const
 {
-    // Dynamic property is now directly supported in PropertyContainer. So we
-    // can comment out here and let PropertyContainerPy handle it.
-#if 1
-    (void)attr;
-#else
-    // search for dynamic property
-    Property* prop = getDocumentObjectPtr()->getDynamicPropertyByName(attr);
-    if (prop)
-        return prop->getPyObject();
-    else
-#endif
         return nullptr;
 }
-
-int DocumentObjectPy::setCustomAttributes(const char* attr, PyObject *obj)
+//remove
+int DocumentObjectPy::setCustomAttributes(const char* , PyObject *)
 {
-    // The following code is practically the same as in PropertyContainerPy,
-    // especially since now dynamic property is directly supported in
-    // PropertyContainer. So we can comment out here and let PropertyContainerPy
-    // handle it.
-#if 1
-    (void)attr;
-    (void)obj;
-#else
-    // explicitly search for dynamic property
-    try {
-        Property* prop = getDocumentObjectPtr()->getDynamicPropertyByName(attr);
-        if (prop) {
-            if(prop->testStatus(Property::Immutable)) {
-                std::stringstream s;
-                s << "'DocumentObject' attribute '" << attr << "' is read-only"; 
-                throw Py::AttributeError(s.str());
-            }
-            prop->setPyObject(obj);
-            return 1;
-        }
-    }
-    catch (Base::ValueError &exc) {
-        std::stringstream s;
-        s << "Property '" << attr << "': " << exc.what();
-        throw Py::ValueError(s.str());
-    }
-    catch (Base::Exception &exc) {
-        std::stringstream s;
-        s << "Attribute (Name: " << attr << ") error: '" << exc.what() << "' ";
-        throw Py::AttributeError(s.str());
-    }
-    catch (Py::AttributeError &) {
-        throw;
-    }catch (...) {
-        std::stringstream s;
-        s << "Unknown error in attribute " << attr;
-        throw Py::AttributeError(s.str());
-    }
-
-    // search in PropertyList
-    Property *prop = getDocumentObjectPtr()->getPropertyByName(attr);
-    if (prop) {
-        // Read-only attributes must not be set over its Python interface
-        if(prop->testStatus(Property::Immutable) ||
-           (getDocumentObjectPtr()->getPropertyType(prop) & Prop_ReadOnly))
-        {
-            std::stringstream s;
-            s << "'DocumentObject' attribute '" << attr << "' is read-only"; 
-            throw Py::AttributeError(s.str());
-        }
-
-        try {
-            prop->setPyObject(obj);
-        }
-        catch (const Base::TypeError& e) {
-            std::stringstream s;
-            s << "Property '" << prop->getName() << "': " << e.what();
-            throw Py::TypeError(s.str());
-        }
-        return 1;
-    } 
-#endif
-
     return 0;
 }
 
