@@ -33,18 +33,24 @@
 
 namespace Surface
 {
-
-
+/*!
+* Create a BezierCurve interpolating a list of BlendPoints
+*/
 class SurfaceExport BlendCurve
 {
 public:
     std::vector<BlendPoint> blendPoints;
 
+    /*!
+    *  Constructor
+    *\param std::vector<BlendPoint>
+    */
     BlendCurve(std::vector<BlendPoint> blendPointsList);
-
-    
-    Handle(Geom_BezierCurve) Interpolate();
-
+    /*!
+    *  Perform the interpolate algorithm
+    *\return the BezierCurve
+    */
+    Handle(Geom_BezierCurve) compute();
 
 private:
 };

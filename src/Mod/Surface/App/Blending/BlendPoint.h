@@ -32,15 +32,24 @@
 namespace Surface
 {
 
-
+/*!
+*   Create a list of vectors formed by a point and some derivatives 
+*   obtained from a curve or surface
+*/ 
 class SurfaceExport BlendPoint
 {
 public:
     std::vector<Base::Vector3d> vectors;
-    std::vector<Base::Vector3d> multipliedVectors;
-
+    /*!
+    *  Constructor
+    *\param std::vector<Base::Vector3d>
+    */
     BlendPoint(std::vector<Base::Vector3d> vectorList);
 
+    /*!
+    *  Resizes the blendpoint vectors
+    *\param scaling factor
+    */
     void multiply(double f);
 
 private:
