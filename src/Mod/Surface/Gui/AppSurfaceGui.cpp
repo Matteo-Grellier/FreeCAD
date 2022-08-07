@@ -37,7 +37,7 @@
 
 
 // use a different name to CreateCommand()
-void CreateSurfaceCommands(void);
+void CreateSurfaceCommands();
 
 
 namespace SurfaceGui {
