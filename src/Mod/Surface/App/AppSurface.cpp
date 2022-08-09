@@ -45,7 +45,7 @@ public:
         initialize("This module is the Surface module."); // register with Python
     }
 
-    virtual ~Module() {}
+    ~Module() override {}
 
 private:
 };
