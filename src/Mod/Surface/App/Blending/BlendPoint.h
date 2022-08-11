@@ -58,6 +58,8 @@ public:
     */
     void multiply(double f);
     void setSize(double f);
+    int getContinuity();
+    int nbVectors();
     virtual PyObject *getPyObject(void);
     // Persistence implementer ---------------------
     virtual unsigned int getMemSize(void) const;

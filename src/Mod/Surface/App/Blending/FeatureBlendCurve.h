@@ -60,11 +60,8 @@ public:
         return "SurfaceGui::ViewProviderBlendCurve";
     }
 
-    void setSize(double, int);
-
-
 private:
-    BlendPoint GetBlendPoint(App::PropertyLinkSub &link, App::PropertyFloatConstraint &param, App::PropertyIntegerConstraint &Continuity, App::PropertyFloat &size);
+    BlendPoint GetBlendPoint(App::PropertyLinkSub &link, App::PropertyFloatConstraint &param, App::PropertyIntegerConstraint &Continuity);
     double RelativeToRealParameters(double, double, double);
     bool lockOnChangeMutex;
 

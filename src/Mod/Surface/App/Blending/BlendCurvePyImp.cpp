@@ -64,11 +64,14 @@ int BlendCurvePy::PyInit(PyObject *args, PyObject * /*kwds*/)
 {
     PyObject *plist;
     if (!PyArg_ParseTuple(args, "O", &plist)) {
-        PyErr_SetString(PyExc_TypeError, "Constructor Need 1 argument");
         return -1;
     }
     try {
         Py::Sequence list(plist);
+        if (list.size() != 2) {
+            PyErr_SetString(PyExc_TypeError, "Currently BlendCurve need exactly 2 BlendPoints");
+            return -1;
+        }
         std::vector<BlendPoint> bpList;
         for (Py::Sequence::iterator it = list.begin(); it != list.end(); ++it) {
             Py::Object obj(*it);
@@ -77,18 +80,7 @@ int BlendCurvePy::PyInit(PyObject *args, PyObject * /*kwds*/)
                 bpList.emplace_back(*geom);
             }
         }
-
-        if (bpList.size() > 2) {
-            PyErr_SetString(PyExc_TypeError, "Constructor Need at least 2 BlendPoints");
-            return -1;
-        }
-
-
         this->getBlendCurvePtr()->blendPoints = bpList;
-
-        //Handle(Geom_BezierCurve) point = new BlendPoint();
-
-
         return 0;
     }
 
@@ -102,9 +94,7 @@ int BlendCurvePy::PyInit(PyObject *args, PyObject * /*kwds*/)
 PyObject *BlendCurvePy::compute(PyObject * /*args*/)
 {
     BlendCurve *bc = getBlendCurvePtr();
-
     Handle(Geom_BezierCurve) gc = bc->compute();
-
     return new Part::BezierCurvePy(new Part::GeomBezierCurve(gc));
 }
 
@@ -115,20 +105,16 @@ PyObject *BlendCurvePy::setSize(PyObject *args)
     double size;
     bool relative = true;
     if (!PyArg_ParseTuple(args, "idb", &i, &size, &relative)) {
-        PyErr_SetString(PyExc_TypeError, "Constructor Need 3 argument");
+        return nullptr;
     }
     try {
-      if (relative)
-      {
-        size = this->getBlendCurvePtr()->blendPoints[0].vectors.size() + this->getBlendCurvePtr()->blendPoints[1].vectors.size();
-      }
-      getBlendCurvePtr()->setSize(i,size);
-      Py_Return;
+      getBlendCurvePtr()->setSize(i, size, true); 
     }
     catch (Standard_Failure &e) {
         PyErr_SetString(PyExc_Exception, e.GetMessageString());
         return nullptr;
     }
+    Py_Return;
 }
 
 PyObject *BlendCurvePy::getCustomAttributes(const char * /*attr*/) const

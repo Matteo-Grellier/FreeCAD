@@ -48,7 +48,7 @@ BlendPoint::BlendPoint(std::vector<Base::Vector3d> vectorList)
     if (vectorList.size() == 0) {
         throw Base::ValueError("the vector List is empty");
     }
-    for (size_t i = 0; i < vectorList.size(); i++) {
+    for (size_t i = 0; i < nbVectors(); i++) {
         vectors.emplace_back(vectorList[i]);
     }
 }
@@ -63,14 +63,14 @@ BlendPoint::~BlendPoint()
 
 void BlendPoint::multiply(double f)
 {
-    for (size_t i = 0; i < vectors.size(); i++) {
+    for (size_t i = 0; i < nbVectors(); i++) {
         vectors[i] *= Pow(f, i);
     }
 }
 
 void BlendPoint::setSize(double f)
 {
-    if (vectors.size() > 1) {
+    if (nbVectors() > 1) {
         double il = vectors[1].Length();
         if (il > Precision::Confusion()) {
             multiply(f / il);
@@ -78,9 +78,18 @@ void BlendPoint::setSize(double f)
     }
 }
 
+int BlendPoint::getContinuity()
+{
+    return vectors.size() - 1;
+}
+
+int BlendPoint::nbVectors(){
+    return vectors.size();
+}
+
 PyObject *BlendPoint::getPyObject(void)
 {
-    PyObject *pcObject = PyList_New(vectors.size());
+    PyObject *pcObject = PyList_New(getContinuity());
     return Py::new_reference_to(pcObject);
 }
 

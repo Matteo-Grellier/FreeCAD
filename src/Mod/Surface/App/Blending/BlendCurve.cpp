@@ -56,7 +56,7 @@ BlendCurve::BlendCurve(std::vector<BlendPoint> blendPointsList)
         throw Base::ValueError("Need two points for working");
     }
 
-    for (size_t i = 0; i < nb_pts; i++) {
+    for (int i = 0; i < nb_pts; i++) {
         blendPoints.emplace_back(blendPointsList[i]);
     }
 }
@@ -78,7 +78,7 @@ Handle(Geom_BezierCurve) BlendCurve::compute()
 
         int num_poles = 0;
         for (int i = 0; i < nb_pts; ++i) {
-            num_poles += blendPoints[i].vectors.size();
+            num_poles += blendPoints[i].nbVectors();
         }
         Handle(Geom_BezierCurve) curve;
         if (num_poles > curve->MaxDegree())// use Geom_BezierCurve max degree
@@ -97,11 +97,11 @@ Handle(Geom_BezierCurve) BlendCurve::compute()
         int row_idx = 1;
         int cons_idx = 1;
         for (int i = 0; i < nb_pts; ++i) {
-            math_Matrix bezier_eval(1, blendPoints[i].vectors.size(), 1, num_poles, 0.0);
+            math_Matrix bezier_eval(1, blendPoints[i].nbVectors(), 1, num_poles, 0.0);
             Standard_Integer first_non_zero;
-            BSplCLib::EvalBsplineBasis(blendPoints[i].vectors.size() - 1, num_poles, knots, params(cons_idx), first_non_zero, bezier_eval, Standard_False);
+            BSplCLib::EvalBsplineBasis(blendPoints[i].nbVectors() - 1, num_poles, knots, params(cons_idx), first_non_zero, bezier_eval, Standard_False);
             int idx2 = 1;
-            for (int it2 = 0; it2 < blendPoints[i].vectors.size(); ++it2) {
+            for (int it2 = 0; it2 < blendPoints[i].nbVectors(); ++it2) {
                 OCCmatrix.SetRow(row_idx, bezier_eval.Row(idx2));
                 Base::Vector3d pnt = blendPoints[i].vectors[it2];
                 res_x(row_idx) = pnt.x;
@@ -133,16 +133,29 @@ Handle(Geom_BezierCurve) BlendCurve::compute()
         return bezier;
     }
     catch (Standard_Failure &e) {
-        Standard_Failure::Raise("Error");
+        PyErr_SetString(PyExc_Exception, e.GetMessageString());
     }
+    return nullptr;
 }
 
-void BlendCurve::setSize(int i, double f)
+void BlendCurve::setSize(int i, double f, bool relative)
 {
-    if (i >= static_cast<int>(blendPoints.size())) {
-        Standard_Failure::Raise("BlendPoint Index out of range");
+    double size = f;
+    // if (!PyArg_ParseTuple(args, "idb", &i, &size, &relative)) {
+    //     return nullptr;
+    // }
+    try {
+      if (relative)
+      {
+        double nb_poles = blendPoints[0].nbVectors() + blendPoints[1].nbVectors();
+        Base::Vector3d diff =  blendPoints[1].vectors[0] - blendPoints[0].vectors[0];
+        size = size * diff.Length() / nb_poles;
+      }
+      blendPoints[i].setSize(size);
     }
-    blendPoints[i].setSize(f);
+    catch (Standard_Failure &e) {
+        PyErr_SetString(PyExc_Exception, e.GetMessageString());
+    }
 }
 
 unsigned int BlendCurve::getMemSize(void) const

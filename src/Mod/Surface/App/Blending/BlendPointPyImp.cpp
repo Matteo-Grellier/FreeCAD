@@ -76,16 +76,17 @@ int BlendPointPy::PyInit(PyObject *args, PyObject *kwds)
     if (PyArg_ParseTuple(args, "O", &plist)) {
 
         Py::Sequence list(plist);
+        if (list.size() == 0) {
+            PyErr_SetString(PyExc_TypeError, "The list is empty");
+            return -1;
+        }
         std::vector<Base::Vector3d> vecs;
         for (Py::Sequence::iterator it = list.begin(); it != list.end(); ++it) {
             Py::Vector v(*it);
             Base::Vector3d pole = v.toVector();
             vecs.emplace_back(pole);
         }
-        if (list.size() == 0) {
-            PyErr_SetString(PyExc_TypeError, "The list is empty");
-            return -1;
-        }
+        
 
         //Handle(Geom_BezierCurve) point = new BlendPoint();
         this->getBlendPointPtr()->vectors = vecs;
@@ -168,6 +169,15 @@ Py::List BlendPointPy::getVectors() const
         return Py::List();
     }
 }
+
+// Py::Long BlendPointPy::getContinuity(PyObject *args){
+//   PyObject *pcObj;
+//   if (PyArg_ParseTuple(args, "O!", &(BlendPoint), &pcObj)) {
+//     return Py::Long(pcObj.vectors.size() - 1);
+//   }
+
+    
+// }
 
 PyObject *BlendPointPy::setvectors(PyObject *args)
 {

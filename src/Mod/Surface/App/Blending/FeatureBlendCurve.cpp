@@ -86,7 +86,7 @@ short FeatureBlendCurve::mustExecute() const
     return 0;
 }
 
-BlendPoint FeatureBlendCurve::GetBlendPoint(App::PropertyLinkSub &link, App::PropertyFloatConstraint &param, App::PropertyIntegerConstraint &continuity, App::PropertyFloat &size)
+BlendPoint FeatureBlendCurve::GetBlendPoint(App::PropertyLinkSub &link, App::PropertyFloatConstraint &param, App::PropertyIntegerConstraint &continuity)
 {
     auto linked = link.getValue();
 
@@ -123,7 +123,6 @@ BlendPoint FeatureBlendCurve::GetBlendPoint(App::PropertyLinkSub &link, App::Pro
     }
 
     BlendPoint bp(constraints);
-    bp.setSize(size.getValue());
 
     return bp;
 }
@@ -131,17 +130,17 @@ BlendPoint FeatureBlendCurve::GetBlendPoint(App::PropertyLinkSub &link, App::Pro
 App::DocumentObjectExecReturn *FeatureBlendCurve::execute(void)
 {
 
-    BlendPoint bp1 = GetBlendPoint(StartEdge, StartParameter, StartContinuity, StartSize);
-    BlendPoint bp2 = GetBlendPoint(EndEdge, EndParameter, EndContinuity, EndSize);
+    BlendPoint bp1 = GetBlendPoint(StartEdge, StartParameter, StartContinuity);
+    BlendPoint bp2 = GetBlendPoint(EndEdge, EndParameter, EndContinuity);
 
     std::vector<BlendPoint> blendPointsList;
 
     blendPointsList.emplace_back(bp1);
     blendPointsList.emplace_back(bp2);
 
-
     BlendCurve curve(blendPointsList);
-
+    // curve.setSize(0, StartSize.getValue(), true);
+    // curve.setSize(1, EndSize.getValue(), true);
 
     Handle(Geom_BezierCurve) bc(curve.compute());
     BRepBuilderAPI_MakeEdge mkEdge(bc);

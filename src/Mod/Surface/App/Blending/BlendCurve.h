@@ -48,7 +48,6 @@ public:
     *\param std::vector<BlendPoint>
     */
 
-    void setSize(int, double);
 
     BlendCurve();
     BlendCurve(std::vector<BlendPoint> blendPointsList);
@@ -58,6 +57,8 @@ public:
     *\return the BezierCurve
     */
     Handle(Geom_BezierCurve) compute();
+    void setSize(int, double, bool);
+
     virtual PyObject *getPyObject(void);
     // Persistence implementer ---------------------
     virtual unsigned int getMemSize(void) const;
