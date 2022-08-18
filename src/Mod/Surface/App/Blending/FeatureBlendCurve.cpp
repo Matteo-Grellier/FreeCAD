@@ -26,7 +26,6 @@
 #include <BRepAdaptor_Curve.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <Base/Tools.h>
-#include <GeomAPI_PointsToBSplineSurface.hxx>
 #include <Geom_Curve.hxx>
 #include <Precision.hxx>
 #include <Standard_Version.hxx>
@@ -116,7 +115,7 @@ BlendPoint FeatureBlendCurve::GetBlendPoint(App::PropertyLinkSub &link, App::Pro
     Base::Vector3d bv(Pt.X(), Pt.Y(), Pt.Z());
     constraints.emplace_back(bv);
 
-    for (size_t i = 1; i <= continuity.getValue(); i++) {
+    for (int i = 1; i <= continuity.getValue(); i++) {
         gp_Vec v1 = adapt.DN(RealPar, i);
         Base::Vector3d bbv1(v1.X(), v1.Y(), v1.Z());
         constraints.emplace_back(bbv1);
@@ -162,8 +161,6 @@ void FeatureBlendCurve::onChanged(const App::Property *prop)
     if (lockOnChangeMutex)
         return;
     Base::StateLocker lock(lockOnChangeMutex);
-
-    auto linked = StartEdge.getValue();
 
     if (prop == &StartContinuity) {
         auto changedStartProp = dynamic_cast<const App::PropertyInteger *>(prop);

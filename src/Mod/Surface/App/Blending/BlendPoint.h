@@ -41,24 +41,33 @@ namespace Surface
 */ 
 class SurfaceExport BlendPoint: public Base::Persistence
 {
-    //PROPERTY_HEADER(Surface::BlendPoint);
-
 public:
     std::vector<Base::Vector3d> vectors;
+    BlendPoint();
     /*!
     *  Constructor
     *\param std::vector<Base::Vector3d>
     */
     BlendPoint(std::vector<Base::Vector3d> vectorList);
-    BlendPoint();
     virtual ~BlendPoint();
     /*!
-    *  Resizes the blendpoint vectors
-    *\param scaling factor
+    *  Scale the blendpoint vectors
+    *\param double scaling factor
     */
     void multiply(double f);
+    /*!
+    * Resize the blendpoint vectors
+    * by setting the size of the first derivative
+    *\param double new size
+    */
     void setSize(double f);
+    /*!
+    *\return continuity of this BlendPoint
+    */
     int getContinuity();
+    /*!
+    *\return Number of vectors of this BlendPoint
+    */
     int nbVectors();
     virtual PyObject *getPyObject(void);
     // Persistence implementer ---------------------

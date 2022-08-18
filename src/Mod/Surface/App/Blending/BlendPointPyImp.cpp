@@ -19,35 +19,19 @@
 // *   Suite 330, Boston, MA  02111-1307, USA                                *
 // *                                                                         *
 // ***************************************************************************/
-//
-//
-// #include "PreCompiled.h"
-// #ifndef _PreComp_
-// #include <BRepAdaptor_Curve.hxx>
-// #include <TopoDS.hxx>
-// #endif
-// #include "Mod/Surface/App/Blending/BlendPointPy.cpp"
-// #include "Mod/Surface/App/Blending/BlendPointPy.h"
-// #include <Base/GeometryPyCXX.h>
-// #include <Base/VectorPy.h>
-// #include <Mod/Part/App/TopoShapePy.h>
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
 #include <BRepAdaptor_Curve.hxx>
-#include <GC_MakeCircle.hxx>
-#include <Geom_Circle.hxx>
 #include <TColStd_Array1OfReal.hxx>
 #include <TColgp_Array1OfPnt.hxx>
 #include <TopoDS.hxx>
-#include <gp_Circ.hxx>
 #endif
-#include "Blending/BlendPoint.h"
-#include "Blending/BlendPointPy.h"
 #include <Base/GeometryPyCXX.h>
 #include <Base/VectorPy.h>
-#include <Mod/Part/App/PartFeature.h>
 #include <Mod/Part/App/TopoShapePy.h>
+#include "Blending/BlendPoint.h"
+#include "Blending/BlendPointPy.h"
 #include "Blending/BlendPointPy.cpp"
 
 using namespace Surface;
@@ -67,33 +51,30 @@ PyObject *BlendPointPy::PyMake(struct _typeobject *, PyObject *, PyObject *)// P
     return new BlendPointPy(new BlendPoint);
 }
 
-int BlendPointPy::PyInit(PyObject *args, PyObject *kwds)
+int BlendPointPy::PyInit(PyObject* args, PyObject*)
 {
-
     PyObject *plist;
     std::vector<Base::Vector3d> vecs;
-    // Create Curve with vectors list
     if (PyArg_ParseTuple(args, "O", &plist)) {
         Py::Sequence list(plist);
         if (list.size() == 0) {
             vecs.emplace_back(Base::Vector3d(0, 0, 0));
-            PyErr_SetString(PyExc_TypeError, "BlendPoint: Empty list of vectors");
-            return -1;
         }
-        for (Py::Sequence::iterator it = list.begin(); it != list.end(); ++it) {
-            Py::Vector v(*it);
-            Base::Vector3d pole = v.toVector();
-            vecs.emplace_back(pole);
+        else {
+            for (Py::Sequence::iterator it = list.begin(); it != list.end(); ++it) {
+                Py::Vector v(*it);
+                Base::Vector3d vec = v.toVector();
+                vecs.emplace_back(vec);
+            }
         }
         this->getBlendPointPtr()->vectors = vecs;
-
         return 0;
     }
 
     PyErr_Clear();
     if (PyArg_ParseTuple(args, "")) {
-        std::vector<Base::Vector3d> vecs;
         vecs.emplace_back(Base::Vector3d(0, 0, 0));
+        this->getBlendPointPtr()->vectors = vecs;
         return 0;
     }
 
@@ -104,22 +85,21 @@ int BlendPointPy::PyInit(PyObject *args, PyObject *kwds)
     // Create a curve with an edge, parameter and continiuity.
     if (PyArg_ParseTuple(args, "O!di", &(Part::TopoShapePy::Type), &pcObj, &param, &cont)) {
         try {
-            std::vector<Base::Vector3d> constraints;
             gp_Pnt Pt;
-
             TopoDS_Shape shape = static_cast<Part::TopoShapePy *>(pcObj)->getTopoShapePtr()->getShape();
             const TopoDS_Edge &e = TopoDS::Edge(shape);
             BRepAdaptor_Curve adapt(e);
 
             adapt.D0(param, Pt);
             Base::Vector3d bv(Pt.X(), Pt.Y(), Pt.Z());
-            constraints.emplace_back(bv);
+            vecs.emplace_back(bv);
 
             for (int i = 1; i <= cont; i++) {
                 gp_Vec v1 = adapt.DN(param, i);
                 Base::Vector3d bbv1(v1.X(), v1.Y(), v1.Z());
-                constraints.emplace_back(bbv1);
+                vecs.emplace_back(bbv1);
             }
+            this->getBlendPointPtr()->vectors = vecs;
             return 0;
         }
         catch (const std::exception &e) {
@@ -127,9 +107,7 @@ int BlendPointPy::PyInit(PyObject *args, PyObject *kwds)
             return -1;
         }
     }
-    this->getBlendPointPtr()->vectors = vecs;
-
-    return 0;
+    return -1;
 }
 
 PyObject *BlendPointPy::setSize(PyObject *args)
@@ -150,26 +128,28 @@ PyObject *BlendPointPy::setSize(PyObject *args)
 
 PyObject *BlendPointPy::getSize(PyObject *args)
 {
-    double bpVectorLength = getBlendPointPtr()->vectors[1].Length();
-
-    return Py_BuildValue("d", bpVectorLength);
+    if (!PyArg_ParseTuple(args, ""))
+        return nullptr;
+    int nb = getBlendPointPtr()->nbVectors();
+    if (nb >= 2) {
+        double bpTangentLength = getBlendPointPtr()->vectors[1].Length();
+        return Py_BuildValue("d", bpTangentLength);
+    }
+    return nullptr;
 }
 
 Py::List BlendPointPy::getVectors() const
 {
-    // Get blendPoint vectors
     try {
-
         BlendPoint *bp = getBlendPointPtr();
-
         std::vector<Base::Vector3d> p = bp->vectors;
-        Py::List poles;
+        Py::List vecs;
         for (size_t i = 0; i < p.size(); i++) {
             Base::VectorPy *vec = new Base::VectorPy(Base::Vector3d(
                 p[i].x, p[i].y, p[i].z));
-            poles.append(Py::asObject(vec));
+            vecs.append(Py::asObject(vec));
         }
-        return poles;
+        return vecs;
     }
     catch (Standard_Failure &e) {
         PyErr_SetString(PyExc_RuntimeError,
@@ -178,22 +158,12 @@ Py::List BlendPointPy::getVectors() const
     }
 }
 
-// Py::Long BlendPointPy::getContinuity(PyObject *args){
-//   PyObject *pcObj;
-//   if (PyArg_ParseTuple(args, "O!", &(BlendPoint), &pcObj)) {
-//     return Py::Long(pcObj.vectors.size() - 1);
-//   }
-
-
-// }
-
 PyObject *BlendPointPy::setvectors(PyObject *args)
 {
     BlendPoint *bp = getBlendPointPtr();
     PyObject *plist;
     if (!PyArg_ParseTuple(args, "O", &plist)) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Error, need a PyObject");
+        PyErr_SetString(PyExc_TypeError, "List of vectors required.");
         return nullptr;
     }
     try {
@@ -208,8 +178,7 @@ PyObject *BlendPointPy::setvectors(PyObject *args)
         Py_Return;
     }
     catch (Standard_Failure &e) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        e.GetMessageString());
+        PyErr_SetString(PyExc_RuntimeError, e.GetMessageString());
     }
     return nullptr;
 }

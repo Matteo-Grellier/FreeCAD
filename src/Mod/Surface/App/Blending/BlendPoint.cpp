@@ -31,6 +31,8 @@
 #include <gp_Pnt.hxx>
 #endif
 #include "Blending/BlendPoint.h"
+#include "Blending/BlendPointPy.h"
+
 
 using namespace Surface;
 
@@ -52,7 +54,7 @@ BlendPoint::~BlendPoint()
 
 void BlendPoint::multiply(double f)
 {
-    for (size_t i = 0; i < nbVectors(); i++) {
+    for (int i = 0; i < nbVectors(); i++) {
         vectors[i] *= Pow(f, i);
     }
 }
@@ -79,8 +81,7 @@ int BlendPoint::nbVectors()
 
 PyObject *BlendPoint::getPyObject(void)
 {
-    PyObject *pcObject = PyList_New(getContinuity());
-    return Py::new_reference_to(pcObject);
+    return new BlendPointPy(new BlendPoint(vectors));
 }
 
 void BlendPoint::Save(Base::Writer & /*writer*/) const
@@ -96,6 +97,5 @@ void BlendPoint::Restore(Base::XMLReader & /*reader*/)
 unsigned int BlendPoint::getMemSize(void) const
 {
     // do we need to loop on the vectors list ?
-    // return vectors.size() * sizeof(vectors[0]);
-    return 0;
+    return sizeof(vectors) * sizeof(vectors.front());
 }

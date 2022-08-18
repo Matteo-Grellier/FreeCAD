@@ -33,7 +33,7 @@
 			<Documentation>
 				<UserDocu>
 					Set the tangent size of the blendpoint at given index.
-          If relative is true, the size is concidered relative to the distance between the two blendpoints.
+					If relative is true, the size is considered relative to the distance between the two blendpoints.
 					myBlendCurve.setSize(idx, size, relative)
 				</UserDocu>
 			</Documentation>

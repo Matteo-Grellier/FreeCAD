@@ -36,11 +36,12 @@
 #include <Base/Vector3D.h>
 #include <Mod/Part/App/Geometry.h>
 #include "Blending/BlendCurve.h"
+#include "Blending/BlendCurvePy.h"
 
 using namespace Surface;
 
-BlendCurve::BlendCurve(){
-
+BlendCurve::BlendCurve()
+{
 }
 
 BlendCurve::BlendCurve(std::vector<BlendPoint> blendPointsList)
@@ -63,11 +64,9 @@ BlendCurve::~BlendCurve()
 
 Handle(Geom_BezierCurve) BlendCurve::compute()
 {
-    // Make BlendCurve from BlendPoints.
     int nb_pts = blendPoints.size();
-
     try {
-        
+        // Uniform Parametrization
         TColStd_Array1OfReal params(1, nb_pts);
         for (int i = 0; i < nb_pts; ++i) {
             params(i + 1) = (double)i / ((double)nb_pts - 1);
@@ -75,15 +74,14 @@ Handle(Geom_BezierCurve) BlendCurve::compute()
         
         int num_poles = 0;
         for (int i = 0; i < nb_pts; ++i) {
-            num_poles += blendPoints[i].vectors.size();
+            num_poles += blendPoints[i].nbVectors();
         }
 
         Handle(Geom_BezierCurve) curve;
-        if (num_poles > curve->MaxDegree())// use Geom_BezierCurve max degree
+        if (num_poles > (curve->MaxDegree()+1))// use Geom_BezierCurve max degree
             Standard_Failure::Raise("number of constraints exceeds bezier curve capacity");
         
         TColStd_Array1OfReal knots(1, 2 * num_poles);
-
         for (int i = 1; i <= num_poles; ++i) {
             knots(i) = params(1);
             knots(num_poles + i) = params(nb_pts);
@@ -127,9 +125,7 @@ Handle(Geom_BezierCurve) BlendCurve::compute()
             poles.SetValue(idx, gp_Pnt(res_x(idx), res_y(idx), res_z(idx)));
         }
         Handle(Geom_BezierCurve) bezier = new Geom_BezierCurve(poles);
-        ;
         return bezier;
-        
     }
     
     catch (Standard_Failure &e) {
@@ -142,13 +138,12 @@ void BlendCurve::setSize(int i, double f, bool relative)
 {
     double size = f;
     try {
-      if (relative)
-      {
-        double nb_poles = blendPoints[0].nbVectors() + blendPoints[1].nbVectors();
-        Base::Vector3d diff =  blendPoints[1].vectors[0] - blendPoints[0].vectors[0];
-        size = size * diff.Length() / nb_poles;
-      }
-      blendPoints[i].setSize(size);
+        if (relative) {
+            double nb_poles = blendPoints.front().nbVectors() + blendPoints[1].nbVectors();
+            Base::Vector3d diff =  blendPoints[1].vectors[0] - blendPoints[0].vectors[0];
+            size = size * diff.Length() / nb_poles;
+        }
+        blendPoints[i].setSize(size);
     }
     catch (Standard_Failure &e) {
         PyErr_SetString(PyExc_Exception, e.GetMessageString());
@@ -162,7 +157,7 @@ unsigned int BlendCurve::getMemSize(void) const
 
 PyObject *BlendCurve::getPyObject(void)
 {
-    return nullptr;
+    return new BlendCurvePy(new BlendCurve(blendPoints));
 }
 
 void BlendCurve::Save(Base::Writer & /*writer*/) const

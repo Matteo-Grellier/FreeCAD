@@ -26,15 +26,14 @@
 #include <Base/PyObjectBase.h>
 
 #include "FeatureFilling.h"
-#include "Blending/BlendPoint.h"
-#include "Blending/BlendPointPy.h"
-#include "Blending/BlendCurvePy.h"
-#include "Blending/FeatureBlendCurve.h"
 #include "FeatureSewing.h"
 #include "FeatureCut.h"
 #include "FeatureGeomFillSurface.h"
 #include "FeatureExtend.h"
 #include "FeatureSections.h"
+#include "Blending/BlendPointPy.h"
+#include "Blending/BlendCurvePy.h"
+#include "Blending/FeatureBlendCurve.h"
 
 #include <Base/Interpreter.h>
 #include <Base/Parameter.h>
@@ -101,10 +100,10 @@ PyMOD_INIT_FUNC(Surface)
     Surface::Cut             ::init();
     Surface::GeomFillSurface ::init();
     Surface::Extend          ::init();
-    Surface::FeatureBlendCurve ::init();
     Surface::Sections        ::init();
     Surface::BlendPoint      ::init();
     Surface::BlendCurve      ::init();
+    Surface::FeatureBlendCurve ::init();
 
     PyMOD_Return(mod);
 }

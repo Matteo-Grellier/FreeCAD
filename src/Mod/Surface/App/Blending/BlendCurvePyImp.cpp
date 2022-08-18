@@ -19,17 +19,6 @@
 // *   Suite 330, Boston, MA  02111-1307, USA                                *
 // *                                                                         *
 // ***************************************************************************/
-//
-//
-// #include "PreCompiled.h"
-
-// #include "Mod/Part/App/BezierCurvePy.h"
-// #include "Mod/Part/App/Geometry.h"
-// #include "Mod/Surface/App/Blending/BlendCurvePy.cpp"
-// #include "Mod/Surface/App/Blending/BlendCurvePy.h"
-// #include "Mod/Surface/App/Blending/BlendPointPy.h"
-// #include <Base/GeometryPyCXX.h>
-// #include <Base/VectorPy.h>
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
@@ -38,8 +27,8 @@
 #endif
 #include "Blending/BlendCurvePy.h"
 #include "Blending/BlendPointPy.h"
-#include "Mod/Part/App/Geometry.h"
-#include <Base/GeometryPyCXX.h>
+// #include "Mod/Part/App/Geometry.h"
+// #include <Base/GeometryPyCXX.h>
 #include <Base/VectorPy.h>
 #include <Mod/Part/App/BezierCurvePy.h>
 #include "Blending/BlendCurvePy.cpp"
@@ -105,12 +94,12 @@ PyObject *BlendCurvePy::setSize(PyObject *args)
 {
     int i;
     double size;
-    bool relative = true;
-    if (!PyArg_ParseTuple(args, "idb", &i, &size, &relative)) {
+    PyObject* relative = Py_True;
+    if (!PyArg_ParseTuple(args, "idO!", &i, &size, &PyBool_Type, &relative)) {
         return nullptr;
     }
     try {
-        getBlendCurvePtr()->setSize(i, size, true);
+        getBlendCurvePtr()->setSize(i, size, Base::asBoolean(relative));
     }
     catch (Standard_Failure &e) {
         PyErr_SetString(PyExc_Exception, e.GetMessageString());

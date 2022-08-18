@@ -29,7 +29,6 @@ set(Surface_LIBS
   Part
 )
 
-# BlendPoint Wrapper
 SET(BlendingPy_SRCS
   Blending/BlendPointPy.xml
   Blending/BlendPointPyImp.cpp
