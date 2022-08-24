@@ -40,6 +40,8 @@ SET(SurfaceGui_UIC_SRCS
 SET(BlendingGui_SRCS
     Blending/ViewProviderBlendCurve.cpp
     Blending/ViewProviderBlendCurve.h
+    Blending/ViewProviderBlendSurface.cpp
+    Blending/ViewProviderBlendSurface.h
 )
 
 if (BUILD_QT5)

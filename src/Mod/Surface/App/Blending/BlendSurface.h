@@ -1,7 +1,6 @@
 /***************************************************************************
  *   Copyright (c) 2022 Matteo Grellier <matteogrellier@gmail.com>         *
  *                                                                         *
- *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
@@ -21,51 +20,43 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "PreCompiled.h"
-#ifndef _PreComp_
-#include <Precision.hxx>
-#include <Standard_Real.hxx>
+#ifndef BLEND_SURFACE_H
+#define BLEND_SURFACE_H
+
+
+#include <Geom_BoundedSurface.hxx>
+#include <GeomFill_FillingStyle.hxx>
+#include <ShapeExtend_WireData.hxx>
+
+#include <Mod/Part/App/FeaturePartSpline.h>
+#include <Mod/Surface/SurfaceGlobal.h>
+
+namespace Surface
+{
+/*!
+* Create a BezierCurve interpolating a list of BlendPoints
+*/
+class SurfaceExport BlendSurface
+{
+public:
+
+    
+
+    BlendSurface() = default;
+    
+    ~BlendSurface() = default;
+    BlendSurface(TopoDS_Shape,TopoDS_Shape);
+
+
+    Geom_BSplineSurface RuleSurface();
+
+    Geom_BSplineCurve getCurve(int, const TopoDS_Shape& shape);
+private:
+    TopoDS_Shape shape1 ;
+    const TopoDS_Shape& shape2 ;
+};
+
+}// namespace Surface
+
 #endif
-#include "Blending/BlendPoint.h"
-#include "Blending/BlendPointPy.h"
-#include <Base/Console.h>
 
-
-using namespace Surface;
-
-BlendPoint::BlendPoint(const std::vector<Base::Vector3d>& vectorList)
-  : vectors{vectorList}
-{
-}
-
-BlendPoint::BlendPoint()
-{
-    vectors.emplace_back(Base::Vector3d(0, 0, 0));
-}
-
-void BlendPoint::multiply(double f)
-{
-    for (int i = 0; i < nbVectors(); i++) {
-        vectors[i] *= Pow(f, i);
-    }
-}
-
-void BlendPoint::setSize(double f)
-{
-    if (nbVectors() > 1) {
-        double il = vectors[1].Length();
-        if (il > Precision::Confusion()) {
-            multiply(f / il);
-        }
-    }
-}
-
-int BlendPoint::getContinuity()
-{
-    return vectors.size() - 1;
-}
-
-int BlendPoint::nbVectors()
-{
-    return vectors.size();
-}

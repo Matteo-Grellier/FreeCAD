@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
+	<PythonExport
+		Father="PyObjectBase"
+		FatherInclude="Base/BaseClassPy.h"
+		FatherNamespace="Base"
+		Name="BlendSurfacePy"
+		PythonName="Surface.BlendSurface"
+		Twin="BlendSurface"
+		TwinPointer="BlendSurface"
+		Include="Mod/Surface/App/Blending/BlendSurface.h"
+		Namespace="Surface"
+		Constructor="true"
+		Delete="true">
+		<Documentation>
+		</Documentation>
+		<Documentation>
+			<Author Licence="LGPL" Name="Mattéo Grellier" EMail="matteogrellier@gmail.com" />
+			<UserDocu>
+			</UserDocu>
+		</Documentation>
+	</PythonExport>
+</GenerateModel>

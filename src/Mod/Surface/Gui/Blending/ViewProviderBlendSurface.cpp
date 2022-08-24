@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2022 Matteo Grellier <matteogrellier@gmail.com>         *
- *                                                                         *
+ *   Copyright (c) 2020 Eliud Cabrera Castillo <matteogrellier@gmail.com>  *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -21,51 +20,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "PreCompiled.h"
-#ifndef _PreComp_
-#include <Precision.hxx>
-#include <Standard_Real.hxx>
-#endif
-#include "Blending/BlendPoint.h"
-#include "Blending/BlendPointPy.h"
-#include <Base/Console.h>
+#include "../PreCompiled.h"
 
+#include <Gui/BitmapFactory.h>
+#include <Mod/Part/Gui/ViewProvider.h>
 
-using namespace Surface;
+#include "ViewProviderBlendSurface.h"
 
-BlendPoint::BlendPoint(const std::vector<Base::Vector3d>& vectorList)
-  : vectors{vectorList}
+using namespace SurfaceGui;
+
+PROPERTY_SOURCE(SurfaceGui::ViewProviderBlendSurface, PartGui::ViewProviderSpline)
+
+namespace SurfaceGui
 {
+
+QIcon ViewProviderBlendSurface::getIcon(void) const
+{
+    return Gui::BitmapFactory().pixmap("BlendSurface");
 }
 
-BlendPoint::BlendPoint()
-{
-    vectors.emplace_back(Base::Vector3d(0, 0, 0));
-}
-
-void BlendPoint::multiply(double f)
-{
-    for (int i = 0; i < nbVectors(); i++) {
-        vectors[i] *= Pow(f, i);
-    }
-}
-
-void BlendPoint::setSize(double f)
-{
-    if (nbVectors() > 1) {
-        double il = vectors[1].Length();
-        if (il > Precision::Confusion()) {
-            multiply(f / il);
-        }
-    }
-}
-
-int BlendPoint::getContinuity()
-{
-    return vectors.size() - 1;
-}
-
-int BlendPoint::nbVectors()
-{
-    return vectors.size();
-}
+}//namespace SurfaceGui

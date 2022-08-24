@@ -23,49 +23,39 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
+#include <BSplCLib.hxx>
+#include <Geom_BezierCurve.hxx>
 #include <Precision.hxx>
-#include <Standard_Real.hxx>
+#include <Standard_Version.hxx>
+#include <TColStd_Array1OfReal.hxx>
+#include <TColgp_Array1OfPnt.hxx>
+#include <BRepAdaptor_Curve.hxx>
+#include <gp_Pnt.hxx>
+#include <math_Gauss.hxx>
+#include <math_Matrix.hxx>
+#include <TopoDS.hxx>
 #endif
-#include "Blending/BlendPoint.h"
-#include "Blending/BlendPointPy.h"
-#include <Base/Console.h>
-
+#include "Blending/BlendSurface.h"
+#include <Base/Vector3D.h>
+#include <Mod/Part/App/Geometry.h>
 
 using namespace Surface;
 
-BlendPoint::BlendPoint(const std::vector<Base::Vector3d>& vectorList)
-  : vectors{vectorList}
+BlendSurface(TopoDS_Shape shape1,TopoDS_Shape shape2);
 {
+    
 }
 
-BlendPoint::BlendPoint()
-{
-    vectors.emplace_back(Base::Vector3d(0, 0, 0));
-}
-
-void BlendPoint::multiply(double f)
-{
-    for (int i = 0; i < nbVectors(); i++) {
-        vectors[i] *= Pow(f, i);
+Geom_BSplineCurve getCurve(int i, TopoDS_Shape shape){
+    if (shape == TopoDS_Edge)
+    {
+        TopoDS_Edge edge = TopoDS::Edge(shape);
+        BRepAdaptor_Curve curve(edge);
+        return bspline;
+    }else if(shape == TopoDS_Wire){
+        TopoDS_Wire wire = TopoDS::Wire(shape);
+        BRepAdaptor_Curve curve(wire);
+        return bspline;
     }
-}
-
-void BlendPoint::setSize(double f)
-{
-    if (nbVectors() > 1) {
-        double il = vectors[1].Length();
-        if (il > Precision::Confusion()) {
-            multiply(f / il);
-        }
-    }
-}
-
-int BlendPoint::getContinuity()
-{
-    return vectors.size() - 1;
-}
-
-int BlendPoint::nbVectors()
-{
-    return vectors.size();
+    
 }

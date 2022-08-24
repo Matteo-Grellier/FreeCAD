@@ -29,6 +29,7 @@
 #include <Gui/Application.h>
 
 #include "Blending/ViewProviderBlendCurve.h"
+#include "Blending/ViewProviderBlendSurface.h"
 #include "TaskFilling.h"
 #include "TaskGeomFillSurface.h"
 #include "TaskSections.h"
@@ -80,6 +81,7 @@ PyMOD_INIT_FUNC(SurfaceGui)
     SurfaceGui::ViewProviderSections        ::init();
     SurfaceGui::ViewProviderExtend          ::init();
     SurfaceGui::ViewProviderBlendCurve      ::init();
+    SurfaceGui::ViewProviderBlendSurface      ::init();
     // SurfaceGui::ViewProviderCut::init();
 
     PyObject *mod = SurfaceGui::initModule();

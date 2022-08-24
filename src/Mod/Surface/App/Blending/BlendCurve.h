@@ -43,6 +43,7 @@ public:
     *\param std::vector<BlendPoint>
     */
     BlendCurve(const std::vector<BlendPoint>& blendPointsList);
+    
     ~BlendCurve() = default;
     /*!
     *  Perform the interpolate algorithm

@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2022 Matteo Grellier <matteogrellier@gmail.com>         *
- *                                                                         *
+ *   Copyright (c) 2020 Eliud Cabrera Castillo <e.cabrera-castillo@tum.de> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -21,51 +20,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "PreCompiled.h"
-#ifndef _PreComp_
-#include <Precision.hxx>
-#include <Standard_Real.hxx>
-#endif
-#include "Blending/BlendPoint.h"
-#include "Blending/BlendPointPy.h"
-#include <Base/Console.h>
+#ifndef SURFACEGUI_VIEWPROVIDERBLENDSURFACE_H
+#define SURFACEGUI_VIEWPROVIDERBLENDSURFACE_H
 
+#include <Mod/Part/Gui/ViewProviderSpline.h>
+#include <Mod/Surface/App/Blending/FeatureBlendSurface.h>
 
-using namespace Surface;
-
-BlendPoint::BlendPoint(const std::vector<Base::Vector3d>& vectorList)
-  : vectors{vectorList}
+namespace SurfaceGui
 {
-}
 
-BlendPoint::BlendPoint()
+class ViewProviderBlendSurface: public PartGui::ViewProviderSpline
 {
-    vectors.emplace_back(Base::Vector3d(0, 0, 0));
-}
+    PROPERTY_HEADER(SurfaceGui::ViewProviderBlendSurface);
 
-void BlendPoint::multiply(double f)
-{
-    for (int i = 0; i < nbVectors(); i++) {
-        vectors[i] *= Pow(f, i);
-    }
-}
+public:
+    QIcon getIcon(void) const;
+};
 
-void BlendPoint::setSize(double f)
-{
-    if (nbVectors() > 1) {
-        double il = vectors[1].Length();
-        if (il > Precision::Confusion()) {
-            multiply(f / il);
-        }
-    }
-}
+}//namespace SurfaceGui
 
-int BlendPoint::getContinuity()
-{
-    return vectors.size() - 1;
-}
-
-int BlendPoint::nbVectors()
-{
-    return vectors.size();
-}
+#endif// SURFACEGUI_VIEWPROVIDEREXTEND_H

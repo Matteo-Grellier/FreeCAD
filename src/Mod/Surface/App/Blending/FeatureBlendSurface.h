@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2022 Matteo Grellier <matteogrellier@gmail.com>         *
- *                                                                         *
+ *   Copyright (c) 2014 Matteo Grellier <matteogrellier@gmail.com>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -21,51 +20,59 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "PreCompiled.h"
-#ifndef _PreComp_
-#include <Precision.hxx>
-#include <Standard_Real.hxx>
+#ifndef FEATURE_BLEND_SURFACE_H
+#define FEATURE_BLEND_SURFACE_H
+
+#include <App/PropertyLinks.h>
+#include <App/PropertyStandard.h>
+#include <App/PropertyUnits.h>
+#include <Mod/Part/App/FeaturePartSpline.h>
+#include <Mod/Surface/SurfaceGlobal.h>
+
+namespace Surface
+{
+
+class SurfaceExport FeatureBlendSurface: public Part::Spline
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(Surface::FeatureBlendSurface);
+
+public:
+
+    FeatureBlendSurface();
+
+    App::PropertyLinkSub StartEdge;
+    App::PropertyLinkSub StartFace;
+    App::PropertyIntegerConstraint StartContinuity;
+    App::PropertyFloatList StartSize;
+
+    App::PropertyLinkSub EndEdge;
+    App::PropertyLinkSub EndFace;
+    App::PropertyIntegerConstraint EndContinuity;
+    App::PropertyFloatList EndSize;
+
+    App::PropertyInteger nbSamples;
+
+    App::DocumentObjectExecReturn *execute(void) override;
+    short mustExecute() const override;
+
+    TopoDS_Edge getEdge(App::PropertyLinkSub);
+
+    TopoDS_Face getFace(App::PropertyLinkSub);
+
+    void sizeDiff(App::PropertyFloatList StartSize, App::PropertyFloatList EndSize);
+
+    const char *getViewProviderName(void) const override
+    {
+        return "SurfaceGui::ViewProviderBlendCurve";
+    }
+
+private:
+    bool lockOnChangeMutex;
+
+protected:
+    virtual void onChanged(const App::Property *prop) override;
+};
+
+}//Namespace Surface
+
 #endif
-#include "Blending/BlendPoint.h"
-#include "Blending/BlendPointPy.h"
-#include <Base/Console.h>
-
-
-using namespace Surface;
-
-BlendPoint::BlendPoint(const std::vector<Base::Vector3d>& vectorList)
-  : vectors{vectorList}
-{
-}
-
-BlendPoint::BlendPoint()
-{
-    vectors.emplace_back(Base::Vector3d(0, 0, 0));
-}
-
-void BlendPoint::multiply(double f)
-{
-    for (int i = 0; i < nbVectors(); i++) {
-        vectors[i] *= Pow(f, i);
-    }
-}
-
-void BlendPoint::setSize(double f)
-{
-    if (nbVectors() > 1) {
-        double il = vectors[1].Length();
-        if (il > Precision::Confusion()) {
-            multiply(f / il);
-        }
-    }
-}
-
-int BlendPoint::getContinuity()
-{
-    return vectors.size() - 1;
-}
-
-int BlendPoint::nbVectors()
-{
-    return vectors.size();
-}

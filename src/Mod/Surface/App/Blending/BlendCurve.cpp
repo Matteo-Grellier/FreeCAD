@@ -36,6 +36,7 @@
 #include "Blending/BlendCurvePy.h"
 #include <Base/Vector3D.h>
 #include <Mod/Part/App/Geometry.h>
+#include <Base/Console.h>
 
 using namespace Surface;
 
@@ -134,6 +135,8 @@ void BlendCurve::setSize(int i, double f, bool relative)
             size = size * diff.Length() / nb_poles;
         }
         blendPoints[i].setSize(size);
+        Base::Console().Message("maVariable=%f\n", size);
+
     }
     catch (Standard_Failure &e) {
         PyErr_SetString(Base::PyExc_FC_CADKernelError, e.GetMessageString());

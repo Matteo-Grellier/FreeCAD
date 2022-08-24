@@ -23,6 +23,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Blending)
 
 generate_from_xml(Blending/BlendPointPy)
 generate_from_xml(Blending/BlendCurvePy)
+generate_from_xml(Blending/BlendSurfacePy)
 
 set(Surface_LIBS
   FreeCADApp
@@ -35,33 +36,22 @@ SET(BlendingPy_SRCS
   Blending/BlendPointPyImp.cpp
   Blending/BlendCurvePy.xml
   Blending/BlendCurvePyImp.cpp
+  Blending/BlendSurfacePy.xml
+  Blending/BlendSurfacePyImp.cpp
 )
 SOURCE_GROUP("Blending" FILES ${BlendingPy_SRCS})
 
 SET(Blending_SRCS
   Blending/FeatureBlendCurve.cpp
   Blending/FeatureBlendCurve.h
+  Blending/FeatureBlendSurface.cpp
+  Blending/FeatureBlendSurface.h
   Blending/BlendPoint.cpp
   Blending/BlendPoint.h
   Blending/BlendCurve.cpp
   Blending/BlendCurve.h
-)
-
-SET(BlendingPy_SRCS
-  Blending/BlendPointPy.xml
-  Blending/BlendPointPyImp.cpp
-  Blending/BlendCurvePy.xml
-  Blending/BlendCurvePyImp.cpp
-)
-SOURCE_GROUP("Blending" FILES ${BlendingPy_SRCS})
-
-SET(Blending_SRCS
-  Blending/FeatureBlendCurve.cpp
-  Blending/FeatureBlendCurve.h
-  Blending/BlendPoint.cpp
-  Blending/BlendPoint.h
-  Blending/BlendCurve.cpp
-  Blending/BlendCurve.h
+  Blending/BlendSurface.cpp
+  Blending/BlendSurface.h
 )
 
 SET(Surface_SRCS
