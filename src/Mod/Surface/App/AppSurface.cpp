@@ -28,7 +28,6 @@
 #include "Blending/BlendCurvePy.h"
 #include "Blending/BlendPointPy.h"
 #include "Blending/BlendSurfacePy.h"
-#include "Blending/BlendSurface.h"
 #include "Blending/FeatureBlendCurve.h"
 #include "Blending/FeatureBlendSurface.h"
 #include "FeatureCut.h"

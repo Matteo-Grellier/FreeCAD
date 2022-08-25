@@ -92,7 +92,7 @@ TopoDS_Edge FeatureBlendSurface::getEdge(App::PropertyLinkSub link){
     else {
         axEdge = Feature::getShape(linked);
     }
-    const TopoDS_Edge &edge = TopoDS::Edge(axEdge);
+    TopoDS_Edge &edge = TopoDS::Edge(axEdge);
     return edge;
 }
 
@@ -107,7 +107,7 @@ TopoDS_Face FeatureBlendSurface::getFace(App::PropertyLinkSub link){
         axFace = Feature::getShape(linked);
 
     }
-    const TopoDS_Face &face = TopoDS::Face(axFace);
+    TopoDS_Face &face = TopoDS::Face(axFace);
 
     return face;
 }

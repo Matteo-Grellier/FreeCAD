@@ -23,13 +23,11 @@
 #ifndef BLEND_SURFACE_H
 #define BLEND_SURFACE_H
 
-
-#include <Geom_BoundedSurface.hxx>
-#include <GeomFill_FillingStyle.hxx>
-#include <ShapeExtend_WireData.hxx>
-
-#include <Mod/Part/App/FeaturePartSpline.h>
+#include <TopoDS_Shape.hxx>
+#include <Geom_BSplineSurface.hxx>
+#include <Geom_BSplineCurve.hxx>
 #include <Mod/Surface/SurfaceGlobal.h>
+#include <Geom_BSplineSurface.hxx>
 
 namespace Surface
 {
@@ -40,20 +38,18 @@ class SurfaceExport BlendSurface
 {
 public:
 
-    
-
     BlendSurface() = default;
     
     ~BlendSurface() = default;
-    BlendSurface(TopoDS_Shape,TopoDS_Shape);
 
+    BlendSurface(TopoDS_Shape, TopoDS_Shape);
 
     Geom_BSplineSurface RuleSurface();
 
-    Geom_BSplineCurve getCurve(int, const TopoDS_Shape& shape);
+    Handle(Geom_BSplineCurve) getCurve(int, TopoDS_Shape);
 private:
-    TopoDS_Shape shape1 ;
-    const TopoDS_Shape& shape2 ;
+    TopoDS_Shape shape1;
+    TopoDS_Shape shape2;
 };
 
 }// namespace Surface

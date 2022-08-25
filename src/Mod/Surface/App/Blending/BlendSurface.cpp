@@ -23,39 +23,42 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-#include <BSplCLib.hxx>
-#include <Geom_BezierCurve.hxx>
-#include <Precision.hxx>
-#include <Standard_Version.hxx>
-#include <TColStd_Array1OfReal.hxx>
-#include <TColgp_Array1OfPnt.hxx>
+#include <TopoDS_Shape.hxx>
+#include <TopoDS_Edge.hxx>
+#include <GeomConvert.hxx>
+#include <BRepAdaptor_CompCurve.hxx>
 #include <BRepAdaptor_Curve.hxx>
-#include <gp_Pnt.hxx>
-#include <math_Gauss.hxx>
-#include <math_Matrix.hxx>
 #include <TopoDS.hxx>
 #endif
 #include "Blending/BlendSurface.h"
-#include <Base/Vector3D.h>
-#include <Mod/Part/App/Geometry.h>
+
 
 using namespace Surface;
 
-BlendSurface(TopoDS_Shape shape1,TopoDS_Shape shape2);
-{
+BlendSurface::BlendSurface(TopoDS_Shape shape1, TopoDS_Shape shape2){
     
 }
 
-Geom_BSplineCurve getCurve(int i, TopoDS_Shape shape){
-    if (shape == TopoDS_Edge)
+Handle(Geom_BSplineCurve) BlendSurface::getCurve(int i, TopoDS_Shape shape)
+{
+    Handle(Geom_BSplineCurve) curve;
+    if (shape.ShapeType() == TopAbs_EDGE)
     {
         TopoDS_Edge edge = TopoDS::Edge(shape);
-        BRepAdaptor_Curve curve(edge);
-        return bspline;
-    }else if(shape == TopoDS_Wire){
-        TopoDS_Wire wire = TopoDS::Wire(shape);
-        BRepAdaptor_Curve curve(wire);
-        return bspline;
+        Handle(BRepAdaptor_Curve) acurve = new BRepAdaptor_Curve(edge);
+        Handle(Geom_BSplineCurve) curve = Handle(Geom_BSplineCurve)::DownCast(acurve);
     }
+    else if (shape.ShapeType() == TopAbs_WIRE) {
+        TopoDS_Wire wire = TopoDS::Wire(shape);
+        Handle(BRepAdaptor_CompCurve) curve = new BRepAdaptor_CompCurve(wire);
+        /*Approx_Curve3d approx(curve, 0.001, GeomAbs_C1, 200, 12);
+        if (approx.IsDone() && approx.HasResult()) {
+            Handle(Geom_BSplineCurve) anApproximatedCurve = approx.Curve();
+            return anApproximatedCurve;
+        }*/
+        
+    }
+    Handle(Geom_BSplineCurve) BsCurve = Handle(Geom_BSplineCurve)::DownCast(curve);
+    return BsCurve;
     
 }

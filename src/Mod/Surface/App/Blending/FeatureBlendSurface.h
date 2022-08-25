@@ -52,14 +52,14 @@ public:
 
     App::PropertyInteger nbSamples;
 
-    App::DocumentObjectExecReturn *execute(void) override;
-    short mustExecute() const override;
-
     TopoDS_Edge getEdge(App::PropertyLinkSub);
 
     TopoDS_Face getFace(App::PropertyLinkSub);
-
+    
     void sizeDiff(App::PropertyFloatList StartSize, App::PropertyFloatList EndSize);
+
+    App::DocumentObjectExecReturn *execute(void) override;
+    short mustExecute() const override;
 
     const char *getViewProviderName(void) const override
     {
