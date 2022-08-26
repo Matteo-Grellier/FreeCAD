@@ -52,9 +52,9 @@ public:
 
     App::PropertyInteger nbSamples;
 
-    TopoDS_Edge getEdge(App::PropertyLinkSub);
+    TopoDS_Shape getEdge(App::PropertyLinkSub);
 
-    TopoDS_Face getFace(App::PropertyLinkSub);
+    TopoDS_Shape getFace(App::PropertyLinkSub);
     
     void sizeDiff(App::PropertyFloatList StartSize, App::PropertyFloatList EndSize);
 

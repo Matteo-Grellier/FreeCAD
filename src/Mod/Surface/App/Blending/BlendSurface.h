@@ -44,12 +44,15 @@ public:
 
     BlendSurface(TopoDS_Shape, TopoDS_Shape);
 
-    Geom_BSplineSurface RuleSurface();
+    Handle(Geom_BSplineSurface) RuledSurface();
 
-    Handle(Geom_BSplineCurve) getCurve(int, TopoDS_Shape);
+    Handle(Geom_BSplineCurve) IsoCurve(int index, int nbSamples);
+    
+    Handle(Geom_BSplineCurve) getCurve(TopoDS_Shape);
 private:
-    TopoDS_Shape shape1;
-    TopoDS_Shape shape2;
+    TopoDS_Shape _shape1;
+    TopoDS_Shape _shape2;
+    Handle(Geom_BSplineSurface) _initialSurface;
 };
 
 }// namespace Surface

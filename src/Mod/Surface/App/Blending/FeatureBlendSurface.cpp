@@ -82,7 +82,7 @@ short FeatureBlendSurface::mustExecute() const
     return 0;
 }
 
-TopoDS_Edge FeatureBlendSurface::getEdge(App::PropertyLinkSub link){
+TopoDS_Shape FeatureBlendSurface::getEdge(App::PropertyLinkSub link){
     auto linked = link.getValue();
 
     TopoDS_Shape axEdge;
@@ -92,11 +92,11 @@ TopoDS_Edge FeatureBlendSurface::getEdge(App::PropertyLinkSub link){
     else {
         axEdge = Feature::getShape(linked);
     }
-    TopoDS_Edge &edge = TopoDS::Edge(axEdge);
-    return edge;
+    return axEdge;
 }
 
-TopoDS_Face FeatureBlendSurface::getFace(App::PropertyLinkSub link){
+TopoDS_Shape FeatureBlendSurface::getFace(App::PropertyLinkSub link)
+{
     auto linked = link.getValue();
 
     TopoDS_Shape axFace;
@@ -107,9 +107,8 @@ TopoDS_Face FeatureBlendSurface::getFace(App::PropertyLinkSub link){
         axFace = Feature::getShape(linked);
 
     }
-    TopoDS_Face &face = TopoDS::Face(axFace);
-
-    return face;
+    return axFace;
+    ;
 }
 
 void FeatureBlendSurface::sizeDiff(App::PropertyFloatList StartSize, App::PropertyFloatList EndSize){
